@@ -8,7 +8,7 @@ Netgen Connect is a simple eZ Publish extension able to provide user sign in
 by using social network authentication and authorization. (Facebook Connect
 for example).
 
-At this time, Twitter and Facebook are supported.
+At this time, Twitter, Facebook and Tumblr are supported.
 
 After installing the extension and including its template in your pagelayout,
 users are presented with buttons which take them to social network of their choice
@@ -22,7 +22,7 @@ yet (and recommended way), by overriding ngconnect.ini and configure desired set
 in your override. Full instructions for configuring the extension are included in
 ngconnect.ini settings file.
 
-Before using the extension, you need to create Facebook and Twitter apps and have
+Before using the extension, you need to create Facebook, Twitter or Tumblr apps and have
 their consumer keys and secrets ready.
 
 This extension is published under GNU GPLv2 license and as such can be freely used
