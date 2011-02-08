@@ -33,8 +33,6 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 
 		$connection = new TumblrOAuth($consumerKey, $consumerSecret);
 		$tempCredentials = $connection->getRequestToken($callbackUri);
-		$http->setSessionVariable('OAuthToken', $tempCredentials['oauth_token']);
-		$http->setSessionVariable('OAuthTokenSecret', $tempCredentials['oauth_token_secret']);
 		$redirectUri = $connection->getAuthorizeURL($tempCredentials);
 
 		if(!$redirectUri)
@@ -42,6 +40,8 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 			return array('status' => 'error', 'message' => 'Invalid redirection URI.');
 		}
 
+		$http->setSessionVariable('OAuthToken', $tempCredentials['oauth_token']);
+		$http->setSessionVariable('OAuthTokenSecret', $tempCredentials['oauth_token_secret']);
 		return array('status' => 'success', 'redirect_uri' => $redirectUri);
 	}
 
