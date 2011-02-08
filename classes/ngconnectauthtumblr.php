@@ -122,11 +122,12 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 			}
 		}
 
+		$name = $tumbleLog->getAttribute('name');
 		$result = array(
 			'status'		=> 'success',
-			'id'			=> $tumbleLog->getAttribute('name'),
-			'first_name'	=> '',
-			'last_name'		=> '',
+			'id'			=> $name,
+			'first_name'	=> $name,
+			'last_name'		=> $name,
 			'email'			=> '',
 			'picture'		=> $tumbleLog->hasAttribute('avatar-url') ? $tumbleLog->getAttribute('avatar-url') : ''
 		);
