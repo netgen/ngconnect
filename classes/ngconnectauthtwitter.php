@@ -33,6 +33,8 @@ class ngConnectAuthTwitter extends ngConnectAuthBase
 
 		$connection = new TwitterOAuth($consumerKey, $consumerSecret);
 		$tempCredentials = $connection->getRequestToken($callbackUri);
+		$http->setSessionVariable('OAuthToken', $tempCredentials['oauth_token']);
+		$http->setSessionVariable('OAuthTokenSecret', $tempCredentials['oauth_token_secret']);
 		$redirectUri = $connection->getAuthorizeURL($tempCredentials);
 
 		if(!$redirectUri)
@@ -77,7 +79,21 @@ class ngConnectAuthTwitter extends ngConnectAuthBase
 		$oAuthToken = trim($http->getVariable('oauth_token'));
 		$oAuthVerifier = trim($http->getVariable('oauth_verifier'));
 
-		$connection = new TwitterOAuth($consumerKey, $consumerSecret, $oAuthToken, $oAuthVerifier);
+		if(!$http->hasSessionVariable('OAuthToken') || !$http->hasSessionVariable('OAuthTokenSecret')
+			|| $oAuthToken != $http->sessionVariable('OAuthToken'))
+		{
+			$http->removeSessionVariable('OAuthToken');
+			$http->removeSessionVariable('OAuthTokenSecret');
+			return array('status' => 'error', 'message' => 'Token does not match stored value.');
+		}
+		else
+		{
+			$oAuthTokenSecret = $http->sessionVariable('OAuthTokenSecret');
+			$http->removeSessionVariable('OAuthToken');
+			$http->removeSessionVariable('OAuthTokenSecret');
+		}
+
+		$connection = new TwitterOAuth($consumerKey, $consumerSecret, $oAuthToken, $oAuthTokenSecret);
 		$accessToken = $connection->getAccessToken($oAuthVerifier);
 		if(!(isset($accessToken['oauth_token']) && isset($accessToken['oauth_token_secret'])))
 		{
