@@ -25,7 +25,7 @@ if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$
 			}
 			else
 			{
-				$user->logoutCurrent();
+				eZUser::logoutCurrent();
 			}
 		}
 	}
