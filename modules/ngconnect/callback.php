@@ -1,13 +1,13 @@
 <?php
 
 $module = $Params['Module'];
+$http = eZHTTPTool::instance();
 $loginMethod = $Params['LoginMethod'];
 
 $ngConnectINI = eZINI::instance('ngconnect.ini');
 $availableLoginMethods = $ngConnectINI->variable('ngconnect', 'LoginMethods');
 $authHandlerClasses = $ngConnectINI->variable('ngconnect', 'AuthHandlerClasses');
 $loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
-$rootNodeID = eZINI::instance('content.ini')->variable('NodeSettings', 'RootNode');
 
 if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]))
 {
@@ -31,6 +31,17 @@ if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$
 	}
 }
 
-if($loginWindowType != 'popup') return $module->redirect('content', 'view', array('full', $rootNodeID));
+if($loginWindowType != 'popup')
+{
+	if($http->hasSessionVariable('NGConnectLastAccessURI'))
+	{
+		return $module->redirectTo($http->sessionVariable('NGConnectLastAccessURI'));
+	}
+	else
+	{
+		$rootNodeID = eZINI::instance('content.ini')->variable('NodeSettings', 'RootNode');
+		return $module->redirect('content', 'view', array('full', $rootNodeID));
+	}
+}
 
 ?>
