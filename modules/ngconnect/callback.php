@@ -10,34 +10,41 @@ $authHandlerClasses = $ngConnectINI->variable('ngconnect', 'AuthHandlerClasses')
 $loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
 $debugEnabled = (trim($ngConnectINI->variable('ngconnect', 'DebugEnabled')) == 'true');
 
-if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]))
+if(function_exists('curl_init') && function_exists('json_decode'))
 {
-	$authHandler = ngConnectAuthBase::instance(trim($authHandlerClasses[$loginMethod]));
-	if($authHandler instanceof ngConnectAuthBase)
+	if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]))
 	{
-		$result = $authHandler->processAuth();
+		$authHandler = ngConnectAuthBase::instance(trim($authHandlerClasses[$loginMethod]));
+		if($authHandler instanceof ngConnectAuthBase)
+		{
+			$result = $authHandler->processAuth();
 
-		if($result['status'] == 'success')
-		{
-			$user = ngConnectFunctions::createOrUpdateUser($loginMethod, $result);
-			if($user instanceof eZUser && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+			if($result['status'] == 'success')
 			{
-				$user->loginCurrent();
+				$user = ngConnectFunctions::createOrUpdateUser($loginMethod, $result);
+				if($user instanceof eZUser && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+				{
+					$user->loginCurrent();
+				}
+				else
+				{
+					eZUser::logoutCurrent();
+				}
 			}
-			else
+			else if($debugEnabled && isset($result['message']))
 			{
-				eZUser::logoutCurrent();
+				eZDebug::writeError($result['message'], 'ngconnect/callback');
 			}
-		}
-		else if($debugEnabled && isset($result['message']))
-		{
-			eZDebug::writeError($result['message'], 'ngconnect/callback');
-		}
-		else if($debugEnabled)
-		{
-			eZDebug::writeError('Unknown error', 'ngconnect/callback');
+			else if($debugEnabled)
+			{
+				eZDebug::writeError('Unknown error', 'ngconnect/callback');
+			}
 		}
 	}
+}
+else if($debugEnabled)
+{
+	eZDebug::writeError('Netgen Connect requires CURL & JSON PHP extensions to work.', 'ngconnect/callback');
 }
 
 if($loginWindowType != 'popup')

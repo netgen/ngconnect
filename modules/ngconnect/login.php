@@ -16,26 +16,33 @@ $authHandlerClasses = $ngConnectINI->variable('ngconnect', 'AuthHandlerClasses')
 $loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
 $debugEnabled = (trim($ngConnectINI->variable('ngconnect', 'DebugEnabled')) == 'true');
 
-if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]))
+if(function_exists('curl_init') && function_exists('json_decode'))
 {
-	$authHandler = ngConnectAuthBase::instance(trim($authHandlerClasses[$loginMethod]));
-	if($authHandler instanceof ngConnectAuthBase)
+	if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]))
 	{
-		$result = $authHandler->getRedirectUri();
+		$authHandler = ngConnectAuthBase::instance(trim($authHandlerClasses[$loginMethod]));
+		if($authHandler instanceof ngConnectAuthBase)
+		{
+			$result = $authHandler->getRedirectUri();
 
-		if($result['status'] == 'success' && isset($result['redirect_uri']))
-		{
-			return eZHTTPTool::redirect($result['redirect_uri']);
-		}
-		else if($debugEnabled && isset($result['message']))
-		{
-			eZDebug::writeError($result['message'], 'ngconnect/login');
-		}
-		else if($debugEnabled)
-		{
-			eZDebug::writeError('Unknown error', 'ngconnect/login');
+			if($result['status'] == 'success' && isset($result['redirect_uri']))
+			{
+				return eZHTTPTool::redirect($result['redirect_uri']);
+			}
+			else if($debugEnabled && isset($result['message']))
+			{
+				eZDebug::writeError($result['message'], 'ngconnect/login');
+			}
+			else if($debugEnabled)
+			{
+				eZDebug::writeError('Unknown error', 'ngconnect/login');
+			}
 		}
 	}
+}
+else if($debugEnabled)
+{
+	eZDebug::writeError('Netgen Connect requires CURL & JSON PHP extensions to work.', 'ngconnect/login');
 }
 
 if($loginWindowType != 'popup')
