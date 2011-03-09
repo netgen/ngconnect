@@ -14,6 +14,7 @@ $ngConnectINI = eZINI::instance('ngconnect.ini');
 $availableLoginMethods = $ngConnectINI->variable('ngconnect', 'LoginMethods');
 $authHandlerClasses = $ngConnectINI->variable('ngconnect', 'AuthHandlerClasses');
 $loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
+$debugEnabled = (trim($ngConnectINI->variable('ngconnect', 'DebugEnabled')) == 'true');
 
 if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]))
 {
@@ -22,9 +23,17 @@ if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$
 	{
 		$result = $authHandler->getRedirectUri();
 
-		if($result['status'] == 'success')
+		if($result['status'] == 'success' && isset($result['redirect_uri']))
 		{
 			return eZHTTPTool::redirect($result['redirect_uri']);
+		}
+		else if($debugEnabled && isset($result['message']))
+		{
+			eZDebug::writeError($result['message'], 'ngconnect/login');
+		}
+		else if($debugEnabled)
+		{
+			eZDebug::writeError('Unknown error', 'ngconnect/login');
 		}
 	}
 }

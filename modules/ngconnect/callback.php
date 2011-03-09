@@ -8,6 +8,7 @@ $ngConnectINI = eZINI::instance('ngconnect.ini');
 $availableLoginMethods = $ngConnectINI->variable('ngconnect', 'LoginMethods');
 $authHandlerClasses = $ngConnectINI->variable('ngconnect', 'AuthHandlerClasses');
 $loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
+$debugEnabled = (trim($ngConnectINI->variable('ngconnect', 'DebugEnabled')) == 'true');
 
 if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]))
 {
@@ -27,6 +28,14 @@ if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$
 			{
 				eZUser::logoutCurrent();
 			}
+		}
+		else if($debugEnabled && isset($result['message']))
+		{
+			eZDebug::writeError($result['message'], 'ngconnect/callback');
+		}
+		else if($debugEnabled)
+		{
+			eZDebug::writeError('Unknown error', 'ngconnect/callback');
 		}
 	}
 }
