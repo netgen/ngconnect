@@ -1,5 +1,5 @@
 {def $user = fetch(user, current_user) $method_name = ''}
-{if $user.contentobject_id|eq(10)}
+{if $user.contentobject_id|eq(ezini('UserSettings', 'AnonymousUserID'))}
 	{def $login_methods = ezini('ngconnect', 'LoginMethods', 'ngconnect.ini')}
 	{if $login_methods|count}
 		{def $login_window_type = ezini('ngconnect', 'LoginWindowType', 'ngconnect.ini')|trim}
