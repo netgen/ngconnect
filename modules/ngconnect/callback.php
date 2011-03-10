@@ -55,8 +55,7 @@ if($loginWindowType != 'popup')
 	}
 	else
 	{
-		$rootNodeID = eZINI::instance('content.ini')->variable('NodeSettings', 'RootNode');
-		return $module->redirect('content', 'view', array('full', $rootNodeID));
+		return $module->redirectTo('/');
 	}
 }
 

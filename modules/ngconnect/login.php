@@ -13,6 +13,10 @@ else if($http->hasSessionVariable('LastAccessesURI') && strlen($http->sessionVar
 {
 	$http->setSessionVariable('NGConnectLastAccessURI', $http->sessionVariable('LastAccessesURI'));
 }
+else
+{
+	$http->setSessionVariable('NGConnectLastAccessURI', '/');
+}
 
 $ngConnectINI = eZINI::instance('ngconnect.ini');
 $availableLoginMethods = $ngConnectINI->variable('ngconnect', 'LoginMethods');
@@ -57,8 +61,7 @@ if($loginWindowType != 'popup')
 	}
 	else
 	{
-		$rootNodeID = eZINI::instance('content.ini')->variable('NodeSettings', 'RootNode');
-		return $module->redirect('content', 'view', array('full', $rootNodeID));
+		return $module->redirectTo('/');
 	}
 }
 
