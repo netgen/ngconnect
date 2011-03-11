@@ -85,6 +85,7 @@ class ngConnectFunctions
 			{
 				$dataMap['image']->fromString($fileName);
 				$dataMap['image']->store();
+				unlink($fileName);
 			}
 		}
 
@@ -177,6 +178,7 @@ class ngConnectFunctions
 			{
 				$dataMap['image']->fromString($fileName);
 				$dataMap['image']->store();
+				unlink($fileName);
 			}
 		}
 
