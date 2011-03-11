@@ -28,7 +28,7 @@ class ngConnectAuthTwitter extends ngConnectAuthBase
 		}
 
 		$state = md5(session_id() . (string) time());
-		$http->setSessionVariable('OAuthState', $state);
+		$http->setSessionVariable('NGConnectOAuthState', $state);
 		$callbackUri .= '?state=' . $state;
 
 		$connection = new TwitterOAuth($consumerKey, $consumerSecret);
@@ -40,8 +40,8 @@ class ngConnectAuthTwitter extends ngConnectAuthBase
 			return array('status' => 'error', 'message' => 'Invalid redirection URI.');
 		}
 
-		$http->setSessionVariable('OAuthToken', $tempCredentials['oauth_token']);
-		$http->setSessionVariable('OAuthTokenSecret', $tempCredentials['oauth_token_secret']);
+		$http->setSessionVariable('NGConnectOAuthToken', $tempCredentials['oauth_token']);
+		$http->setSessionVariable('NGConnectOAuthTokenSecret', $tempCredentials['oauth_token_secret']);
 		return array('status' => 'success', 'redirect_uri' => $redirectUri);
 	}
 
@@ -66,31 +66,31 @@ class ngConnectAuthTwitter extends ngConnectAuthBase
 		}
 
 		$state = trim($http->getVariable('state'));
-		if(!$http->hasSessionVariable('OAuthState') || $state != $http->sessionVariable('OAuthState'))
+		if(!$http->hasSessionVariable('NGConnectOAuthState') || $state != $http->sessionVariable('NGConnectOAuthState'))
 		{
-			$http->removeSessionVariable('OAuthState');
+			$http->removeSessionVariable('NGConnectOAuthState');
 			return array('status' => 'error', 'message' => 'State parameter does not match stored value.');
 		}
 		else
 		{
-			$http->removeSessionVariable('OAuthState');
+			$http->removeSessionVariable('NGConnectOAuthState');
 		}
 
 		$oAuthToken = trim($http->getVariable('oauth_token'));
 		$oAuthVerifier = trim($http->getVariable('oauth_verifier'));
 
-		if(!$http->hasSessionVariable('OAuthToken') || !$http->hasSessionVariable('OAuthTokenSecret')
-			|| $oAuthToken != $http->sessionVariable('OAuthToken'))
+		if(!$http->hasSessionVariable('NGConnectOAuthToken') || !$http->hasSessionVariable('NGConnectOAuthTokenSecret')
+			|| $oAuthToken != $http->sessionVariable('NGConnectOAuthToken'))
 		{
-			$http->removeSessionVariable('OAuthToken');
-			$http->removeSessionVariable('OAuthTokenSecret');
+			$http->removeSessionVariable('NGConnectOAuthToken');
+			$http->removeSessionVariable('NGConnectOAuthTokenSecret');
 			return array('status' => 'error', 'message' => 'Token does not match stored value.');
 		}
 		else
 		{
-			$oAuthTokenSecret = $http->sessionVariable('OAuthTokenSecret');
-			$http->removeSessionVariable('OAuthToken');
-			$http->removeSessionVariable('OAuthTokenSecret');
+			$oAuthTokenSecret = $http->sessionVariable('NGConnectOAuthTokenSecret');
+			$http->removeSessionVariable('NGConnectOAuthToken');
+			$http->removeSessionVariable('NGConnectOAuthTokenSecret');
 		}
 
 		$connection = new TwitterOAuth($consumerKey, $consumerSecret, $oAuthToken, $oAuthTokenSecret);
@@ -108,12 +108,12 @@ class ngConnectAuthTwitter extends ngConnectAuthBase
 		}
 
 		$result = array(
-			'status'		=> 'success',
-			'id'			=> $user->id,
-			'first_name'	=> isset($user->name) ? $user->name : '',
-			'last_name'		=> '',
-			'email'			=> '',
-			'picture'		=> (isset($user->profile_image_url) && strlen($user->profile_image_url) > 0) ? $user->profile_image_url : ''
+			'status'				=> 'success',
+			'id'					=> $user->id,
+			'first_name'			=> isset($user->name) ? $user->name : '',
+			'last_name'				=> '',
+			'email'					=> '',
+			'picture'				=> (isset($user->profile_image_url) && strlen($user->profile_image_url) > 0) ? $user->profile_image_url : ''
 		);
 
 		return $result;

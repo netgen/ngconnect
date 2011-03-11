@@ -19,7 +19,24 @@ $ViewList['callback'] = array(
 	'params' => array('LoginMethod')
 );
 
+$ViewList['profile'] = array(
+	'functions' => array('profile'),
+	'script' => 'profile.php',
+	'ui_context' => 'authentication',
+	'params' => array()
+);
+
+$ViewList['success'] = array(
+	'functions' => array('success'),
+	'script' => 'success.php',
+	'ui_context' => 'authentication',
+	'params' => array()
+);
+
+
 $FunctionList['login'] = array();
 $FunctionList['callback'] = array();
+$FunctionList['profile'] = array();
+$FunctionList['success'] = array();
 
 ?>

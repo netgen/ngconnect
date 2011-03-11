@@ -9,4 +9,6 @@ TranslationExtensions[]=ngconnect
 [RoleSettings]
 PolicyOmitList[]=ngconnect/login
 PolicyOmitList[]=ngconnect/callback
+PolicyOmitList[]=ngconnect/profile
+PolicyOmitList[]=ngconnect/success
 */ ?>

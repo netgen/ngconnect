@@ -28,7 +28,7 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 		}
 
 		$state = md5(session_id() . (string) time());
-		$http->setSessionVariable('OAuthState', $state);
+		$http->setSessionVariable('NGConnectOAuthState', $state);
 		$callbackUri .= '?state=' . $state;
 
 		$connection = new TumblrOAuth($consumerKey, $consumerSecret);
@@ -40,8 +40,8 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 			return array('status' => 'error', 'message' => 'Invalid redirection URI.');
 		}
 
-		$http->setSessionVariable('OAuthToken', $tempCredentials['oauth_token']);
-		$http->setSessionVariable('OAuthTokenSecret', $tempCredentials['oauth_token_secret']);
+		$http->setSessionVariable('NGConnectOAuthToken', $tempCredentials['oauth_token']);
+		$http->setSessionVariable('NGConnectOAuthTokenSecret', $tempCredentials['oauth_token_secret']);
 		return array('status' => 'success', 'redirect_uri' => $redirectUri);
 	}
 
@@ -66,31 +66,31 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 		}
 
 		$state = trim($http->getVariable('state'));
-		if(!$http->hasSessionVariable('OAuthState') || $state != $http->sessionVariable('OAuthState'))
+		if(!$http->hasSessionVariable('NGConnectOAuthState') || $state != $http->sessionVariable('NGConnectOAuthState'))
 		{
-			$http->removeSessionVariable('OAuthState');
+			$http->removeSessionVariable('NGConnectOAuthState');
 			return array('status' => 'error', 'message' => 'State parameter does not match stored value.');
 		}
 		else
 		{
-			$http->removeSessionVariable('OAuthState');
+			$http->removeSessionVariable('NGConnectOAuthState');
 		}
 
 		$oAuthToken = trim($http->getVariable('oauth_token'));
 		$oAuthVerifier = trim($http->getVariable('oauth_verifier'));
 
-		if(!$http->hasSessionVariable('OAuthToken') || !$http->hasSessionVariable('OAuthTokenSecret')
-			|| $oAuthToken != $http->sessionVariable('OAuthToken'))
+		if(!$http->hasSessionVariable('NGConnectOAuthToken') || !$http->hasSessionVariable('NGConnectOAuthTokenSecret')
+			|| $oAuthToken != $http->sessionVariable('NGConnectOAuthToken'))
 		{
-			$http->removeSessionVariable('OAuthToken');
-			$http->removeSessionVariable('OAuthTokenSecret');
+			$http->removeSessionVariable('NGConnectOAuthToken');
+			$http->removeSessionVariable('NGConnectOAuthTokenSecret');
 			return array('status' => 'error', 'message' => 'Token does not match stored value.');
 		}
 		else
 		{
-			$oAuthTokenSecret = $http->sessionVariable('OAuthTokenSecret');
-			$http->removeSessionVariable('OAuthToken');
-			$http->removeSessionVariable('OAuthTokenSecret');
+			$oAuthTokenSecret = $http->sessionVariable('NGConnectOAuthTokenSecret');
+			$http->removeSessionVariable('NGConnectOAuthToken');
+			$http->removeSessionVariable('NGConnectOAuthTokenSecret');
 		}
 
 		$connection = new TumblrOAuth($consumerKey, $consumerSecret, $oAuthToken, $oAuthTokenSecret);
@@ -102,7 +102,8 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 
 		$connection = new TumblrOAuth($consumerKey, $consumerSecret, $accessToken['oauth_token'], $accessToken['oauth_token_secret']);
 		$userXml = $connection->post('http://www.tumblr.com/api/authenticate');
-		$userDom = DOMDocument::loadXML($userXml);
+		$userDom = new DOMDocument('1.0', 'utf-8');
+		$userDom->loadXML($userXml);
 		if(!($userXml && $userDom))
 		{
 			return array('status' => 'error', 'message' => 'Invalid Tumblr user.');
@@ -124,12 +125,12 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 
 		$name = $tumbleLog->getAttribute('name');
 		$result = array(
-			'status'		=> 'success',
-			'id'			=> $name,
-			'first_name'	=> $name,
-			'last_name'		=> $name,
-			'email'			=> '',
-			'picture'		=> $tumbleLog->hasAttribute('avatar-url') ? $tumbleLog->getAttribute('avatar-url') : ''
+			'status'				=> 'success',
+			'id'					=> $name,
+			'first_name'			=> $name,
+			'last_name'				=> $name,
+			'email'					=> '',
+			'picture'				=> $tumbleLog->hasAttribute('avatar-url') ? $tumbleLog->getAttribute('avatar-url') : ''
 		);
 
 		return $result;

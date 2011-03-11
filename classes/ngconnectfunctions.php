@@ -4,11 +4,17 @@ class ngConnectFunctions
 {
 	public static function createOrUpdateUser($loginMethod, $userData)
 	{
-		$user = eZUser::fetchByName('ngconnect_' . $loginMethod . '_' . $userData['id']);
+		$user = eZUser::fetchByName('0_ngconnect_' . $loginMethod . '_' . $userData['id']);
 		if($user instanceof eZUser)
 		{
 			return self::updateUser($user, $loginMethod, $userData);
 		}
+
+		$user = eZUser::fetchByName('ngconnect_' . $loginMethod . '_' . $userData['id']);
+		if($user instanceof eZUser)
+		{
+			return self::updateUser($user, $loginMethod, $userData);
+		}		
 
 		return self::createUser($loginMethod, $userData);
 	}
@@ -175,7 +181,7 @@ class ngConnectFunctions
 		}
 
 		$user->setAttribute('email', strlen($userData['email']) > 0 ? $userData['email'] :
-										md5('ngconnect_' . $loginMethod . '_' . $userData['id']) . '@ez.no');
+										md5('ngconnect_' . $loginMethod . '_' . $userData['id']) . '@localhost.local');
 		$user->store();
 
 		$userSetting = eZUserSetting::fetch($user->attribute('contentobject_id'));

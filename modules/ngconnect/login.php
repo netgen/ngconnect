@@ -31,19 +31,24 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 		$authHandler = ngConnectAuthBase::instance(trim($authHandlerClasses[$loginMethod]));
 		if($authHandler instanceof ngConnectAuthBase)
 		{
-			$result = $authHandler->getRedirectUri();
-
-			if($result['status'] == 'success' && isset($result['redirect_uri']))
+			$currentUser = eZUser::currentUser();
+			if($currentUser->isAnonymous()
+				|| (!$currentUser->isAnonymous() && !ngConnect::userHasConnection($currentUser->ContentObjectID, $loginMethod)))
 			{
-				return eZHTTPTool::redirect($result['redirect_uri']);
-			}
-			else if($debugEnabled && isset($result['message']))
-			{
-				eZDebug::writeError($result['message'], 'ngconnect/login');
-			}
-			else if($debugEnabled)
-			{
-				eZDebug::writeError('Unknown error', 'ngconnect/login');
+				$result = $authHandler->getRedirectUri();
+	
+				if($result['status'] == 'success' && isset($result['redirect_uri']))
+				{
+					return eZHTTPTool::redirect($result['redirect_uri']);
+				}
+				else if($debugEnabled && isset($result['message']))
+				{
+					eZDebug::writeError($result['message'], 'ngconnect/login');
+				}
+				else if($debugEnabled)
+				{
+					eZDebug::writeError('Unknown error', 'ngconnect/login');
+				}
 			}
 		}
 	}

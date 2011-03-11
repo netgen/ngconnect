@@ -39,7 +39,7 @@ class ngConnectAuthFacebook extends ngConnectAuthBase
 		}
 
 		$state = md5(session_id() . (string) time());
-		$http->setSessionVariable('OAuthState', $state);
+		$http->setSessionVariable('NGConnectOAuthState', $state);
 
 		$redirectUri = str_replace(array('%display%', '%app_id%', '%site_url%', '%permissions%', '%state%'),
 									array(urlencode($displayType), urlencode($appID), urlencode($callbackUri), urlencode($permissionsString), $state),
@@ -62,20 +62,20 @@ class ngConnectAuthFacebook extends ngConnectAuthBase
 		}
 
 		if(!($http->hasGetVariable('code') && strlen(trim($http->getVariable('code'))) > 0
-			&&$http->hasGetVariable('state') && strlen(trim($http->getVariable('state'))) > 0))
+			&& $http->hasGetVariable('state') && strlen(trim($http->getVariable('state'))) > 0))
 		{
 			return array('status' => 'error', 'message' => 'code or state GET parameters undefined.');
 		}
 
 		$state = trim($http->getVariable('state'));
-		if(!$http->hasSessionVariable('OAuthState') || $state != $http->sessionVariable('OAuthState'))
+		if(!$http->hasSessionVariable('NGConnectOAuthState') || $state != $http->sessionVariable('NGConnectOAuthState'))
 		{
-			$http->removeSessionVariable('OAuthState');
+			$http->removeSessionVariable('NGConnectOAuthState');
 			return array('status' => 'error', 'message' => 'State parameter does not match stored value.');
 		}
 		else
 		{
-			$http->removeSessionVariable('OAuthState');
+			$http->removeSessionVariable('NGConnectOAuthState');
 		}
 
 		$code = trim($http->getVariable('code'));
@@ -125,12 +125,12 @@ class ngConnectAuthFacebook extends ngConnectAuthBase
 		}
 
 		$result = array(
-			'status'		=> 'success',
-			'id'			=> $user['id'],
-			'first_name'	=> isset($user['first_name']) ? $user['first_name'] : '',
-			'last_name'		=> isset($user['last_name']) ? $user['last_name'] : '',
-			'email'			=> isset($user['email']) ? $user['email'] : '',
-			'picture'		=> str_replace('%user_id%', $user['id'], self::PICTURE_URI)
+			'status'				=> 'success',
+			'id'					=> $user['id'],
+			'first_name'			=> isset($user['first_name']) ? $user['first_name'] : '',
+			'last_name'				=> isset($user['last_name']) ? $user['last_name'] : '',
+			'email'					=> isset($user['email']) ? $user['email'] : '',
+			'picture'				=> str_replace('%user_id%', $user['id'], self::PICTURE_URI)
 		);
 
 		return $result;
