@@ -113,7 +113,12 @@ class ngConnectAuthTwitter extends ngConnectAuthBase
 			'first_name'			=> isset($user->name) ? $user->name : '',
 			'last_name'				=> '',
 			'email'					=> '',
-			'picture'				=> (isset($user->profile_image_url) && strlen($user->profile_image_url) > 0) ? $user->profile_image_url : ''
+			//Hm... it seems there's no way to get the full size image through API
+			//Even https://api.twitter.com/1/users/profile_image/username never returns full version
+			//Replacing is not safe, but at least we're replacing last occurrence
+			'picture'				=> (isset($user->profile_image_url) && strlen($user->profile_image_url) > 0) ?
+				substr_replace($user->profile_image_url, '', strrpos($user->profile_image_url, '_normal'), 7) : ''
+				//str_replace('_normal', '', $user->profile_image_url) : ''
 		);
 
 		return $result;
