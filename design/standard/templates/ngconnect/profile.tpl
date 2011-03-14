@@ -35,7 +35,6 @@
 	<p>{'If you would like to be able to login to the site by also using a regular account, enter your details below and click the "Save" button.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
 	<p>{'If you don\'t want to create a regular account and just keep using social networks for login purposes, simply click the "Skip" button below.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
 	<p>{'You can also select "Don\'t ask me again" option and we won\'t bother you with this question ever again.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
-	<p>&nbsp;</p>
 
 	<h2>{'Login to existing account'|i18n('extension/ngconnect/ngconnect/profile')}</h2>
 
@@ -61,7 +60,7 @@
 			<input class="halfbox" type="text" size="10" id="{$id_base}_login" name="{$attribute_base}_data_user_login_{$attribute.id}" value="{cond(ezhttp_hasvariable(concat($attribute_base, '_data_user_login_', $attribute.id), 'post'), ezhttp(concat($attribute_base, '_data_user_login_', $attribute.id), 'post'), '')}" tabindex="4" />
 
 			<label>{'E-mail'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
-			<input class="halfbox" type="text" size="10" id="{$id_base}_email" name="{$attribute_base}_data_user_email_{$attribute.id}" value="{cond(ezhttp_hasvariable(concat($attribute_base, '_data_user_email_', $attribute.id), 'post'), ezhttp(concat($attribute_base, '_data_user_email_', $attribute.id), 'post'), cond($ngconnect_user.email|ends_with('@localhost.local')|not, $ngconnect_user.email|wash, ''))}" tabindex="5" />
+			<input class="halfbox" type="text" size="10" id="{$id_base}_email" name="{$attribute_base}_data_user_email_{$attribute.id}" value="{cond(ezhttp_hasvariable(concat($attribute_base, '_data_user_email_', $attribute.id), 'post'), ezhttp(concat($attribute_base, '_data_user_email_', $attribute.id), 'post'), $network_email)}" tabindex="5" />
 
 			<label>{'Password'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
 			<input class="halfbox" type="password" size="10" id="{$id_base}_password" name="{$attribute_base}_data_user_password_{$attribute.id}" value="" tabindex="6" />
@@ -71,8 +70,10 @@
 
 			<div class="buttonblock">
 				<input class="defaultbutton" type="submit" name="SaveButton" value="{'Save'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="8" />
-				<input class="button" type="submit" name="SkipButton" value="{'Skip'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="10" />
-				<input type="checkbox" tabindex="9" name="DontAskMeAgain" id="DontAskMeAgain" /><label for="DontAskMeAgain" style="display:inline;">{'Don\'t ask me again'|i18n('extension/ngconnect/ngconnect/profile')}</label>
+				{if ezini('ngconnect', 'RegularRegistration', 'ngconnect.ini')|eq('optional')}
+					<input class="button" type="submit" name="SkipButton" value="{'Skip'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="10" />
+					<input type="checkbox" tabindex="9" name="DontAskMeAgain" id="DontAskMeAgain" /><label for="DontAskMeAgain" style="display:inline;">{'Don\'t ask me again'|i18n('extension/ngconnect/ngconnect/profile')}</label>
+				{/if}
 			</div>
 		</form>
 	</div>
