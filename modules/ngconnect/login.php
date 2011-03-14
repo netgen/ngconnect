@@ -52,6 +52,14 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 				}
 			}
 		}
+		else if($debugEnabled)
+		{
+			eZDebug::writeError('Invalid auth handler class: ' . $authHandlerClassName, 'ngconnect/login');
+		}
+	}
+	else if($debugEnabled)
+	{
+		eZDebug::writeError('Invalid login method specified.', 'ngconnect/login');
 	}
 }
 else if($debugEnabled)

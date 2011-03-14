@@ -115,6 +115,14 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 				eZDebug::writeError('Unknown error', 'ngconnect/callback');
 			}
 		}
+		else if($debugEnabled)
+		{
+			eZDebug::writeError('Invalid auth handler class: ' . $authHandlerClassName, 'ngconnect/callback');
+		}
+	}
+	else if($debugEnabled)
+	{
+		eZDebug::writeError('Invalid login method specified.', 'ngconnect/callback');
 	}
 }
 else if($debugEnabled)
