@@ -2,7 +2,7 @@
 
 class ngConnectAuthTumblr extends ngConnectAuthBase
 {
-	const CALLBACK_URI_PART = '/ngconnect/callback/tumblr';
+	const CALLBACK_URI_PART = 'ngconnect/callback/tumblr';
 	const TUMBLR_USER_API_URI = 'account/verify_credentials';
 
 	public function getRedirectUri()
@@ -12,24 +12,24 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 
 		$consumerKey = trim($ngConnectINI->variable('LoginMethod_tumblr', 'AppConsumerKey'));
 		$consumerSecret = trim($ngConnectINI->variable('LoginMethod_tumblr', 'AppConsumerSecret'));
-		$siteURL = trim($ngConnectINI->variable('ngconnect', 'SiteURL'));
 
-		if(!(strlen($consumerKey) > 0 && strlen($consumerSecret) > 0 && strlen($siteURL) > 0))
+		if(!(strlen($consumerKey) > 0 && strlen($consumerSecret) > 0))
 		{
-			return array('status' => 'error', 'message' => 'Consumer key, consumer secret or site URL undefined.');
+			return array('status' => 'error', 'message' => 'Consumer key or consumer secret undefined.');
 		}
 
-		$callbackUri = $siteURL . self::CALLBACK_URI_PART;
+		$callbackUri = self::CALLBACK_URI_PART;
 
 		$loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
 		if($loginWindowType == 'popup')
 		{
-			$callbackUri = $siteURL . '/layout/set/ngconnect' . self::CALLBACK_URI_PART;
+			$callbackUri = 'layout/set/ngconnect/' . self::CALLBACK_URI_PART;
 		}
 
 		$state = md5(session_id() . (string) time());
 		$http->setSessionVariable('NGConnectOAuthState', $state);
 		$callbackUri .= '?state=' . $state;
+		eZURI::transformURI($callbackUri, false, 'full');
 
 		$connection = new TumblrOAuth($consumerKey, $consumerSecret);
 		$tempCredentials = $connection->getRequestToken($callbackUri);

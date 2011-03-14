@@ -6,7 +6,7 @@ class ngConnectAuthFacebook extends ngConnectAuthBase
 	const TOKEN_URI = 'https://graph.facebook.com/oauth/access_token?client_id=%app_id%&redirect_uri=%site_url%&client_secret=%app_secret%&code=%code%';
 	const GRAPH_URI = 'https://graph.facebook.com/me?%access_token%';
 	const PICTURE_URI = 'http://graph.facebook.com/%user_id%/picture?type=large';
-	const CALLBACK_URI_PART = '/ngconnect/callback/facebook';
+	const CALLBACK_URI_PART = 'ngconnect/callback/facebook';
 
 	public function getRedirectUri()
 	{
@@ -14,22 +14,22 @@ class ngConnectAuthFacebook extends ngConnectAuthBase
 		$http = eZHTTPTool::instance();
 
 		$appID = trim($ngConnectINI->variable('LoginMethod_facebook', 'FacebookAppID'));
-		$siteURL = trim($ngConnectINI->variable('ngconnect', 'SiteURL'));
 
-		if(!(strlen($appID) > 0 && strlen($siteURL) > 0))
+		if(strlen($appID) == 0)
 		{
-			return array('status' => 'error', 'message' => 'Facebook app ID or site URL undefined.');
+			return array('status' => 'error', 'message' => 'Facebook app ID undefined.');
 		}
 
 		$displayType = 'page';
-		$callbackUri = $siteURL . self::CALLBACK_URI_PART;
+		$callbackUri = self::CALLBACK_URI_PART;
 
 		$loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
 		if($loginWindowType == 'popup')
 		{
 			$displayType = 'popup';
-			$callbackUri = $siteURL . '/layout/set/ngconnect' . self::CALLBACK_URI_PART;
+			$callbackUri = 'layout/set/ngconnect/' . self::CALLBACK_URI_PART;
 		}
+		eZURI::transformURI($callbackUri, false, 'full');
 
 		$permissionsArray = $ngConnectINI->variable('LoginMethod_facebook', 'Permissions');
 		$permissionsString = '';
@@ -54,11 +54,10 @@ class ngConnectAuthFacebook extends ngConnectAuthBase
 
 		$appID = trim($ngConnectINI->variable('LoginMethod_facebook', 'FacebookAppID'));
 		$appSecret = trim($ngConnectINI->variable('LoginMethod_facebook', 'FacebookAppSecret'));
-		$siteURL = trim($ngConnectINI->variable('ngconnect', 'SiteURL'));
 
-		if(!(strlen($appID) > 0 && strlen($siteURL) > 0 && strlen($appSecret) > 0))
+		if(!(strlen($appID) > 0 && strlen($appSecret) > 0))
 		{
-			return array('status' => 'error', 'message' => 'Facebook app ID, site URL or Facebook app secret undefined.');
+			return array('status' => 'error', 'message' => 'Facebook app ID or Facebook app secret undefined.');
 		}
 
 		if(!($http->hasGetVariable('code') && strlen(trim($http->getVariable('code'))) > 0
@@ -80,12 +79,13 @@ class ngConnectAuthFacebook extends ngConnectAuthBase
 
 		$code = trim($http->getVariable('code'));
 
-		$callbackUri = $siteURL . self::CALLBACK_URI_PART;
+		$callbackUri = self::CALLBACK_URI_PART;
 		$loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
 		if($loginWindowType == 'popup')
 		{
-			$callbackUri = $siteURL . '/layout/set/ngconnect' . self::CALLBACK_URI_PART;
+			$callbackUri = 'layout/set/ngconnect/' . self::CALLBACK_URI_PART;
 		}
+		eZURI::transformURI($callbackUri, false, 'full');
 
 		$tokenUri = str_replace(array('%app_id%', '%site_url%', '%app_secret%', '%code%'),
 								array(urlencode($appID), urlencode($callbackUri), urlencode($appSecret), urlencode($code)),
