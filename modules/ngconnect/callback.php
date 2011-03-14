@@ -86,27 +86,16 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 							//"conversion" is not disabled, we redirect to ngconnect/profile
 
 							$user = ngConnectFunctions::createOrUpdateUser($loginMethod, $result);
-							if($user instanceof eZUser && $user->isEnabled()
-								&& $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+							$http->setSessionVariable('NGConnectUserID', ($user instanceof eZUser) ? $user->ContentObjectID : '0');
+							$http->setSessionVariable('NGConnectAuthResult', $result);
+
+							if($loginWindowType == 'page')
 							{
-								//we will login the user only if "conversion" is optional
-								if($regularRegistration == 'optional') $user->loginCurrent();
-
-								$http->setSessionVariable('NGConnectUserID', $user->ContentObjectID);
-								$http->setSessionVariable('NGConnectAuthResult', $result);
-
-								if($loginWindowType == 'page')
-								{
-									return $module->redirectToView('profile');
-								}
-								else
-								{
-									$http->setSessionVariable('NGConnectRedirectToProfile', 'true');
-								}
+								return $module->redirectToView('profile');
 							}
 							else
 							{
-								eZUser::logoutCurrent();
+								$http->setSessionVariable('NGConnectRedirectToProfile', 'true');
 							}
 						}
 					}

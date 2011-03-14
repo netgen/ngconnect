@@ -5,29 +5,39 @@ $http = eZHTTPTool::instance();
 $siteINI = eZINI::instance();
 $ngConnectINI = eZINI::instance('ngconnect.ini');
 $regularRegistration = $ngConnectINI->variable('ngconnect', 'RegularRegistration');
-$currentUser = eZUser::currentUser();
 
 //Couple of sanity checks to see if view can run
-
-$accessAllowed = false;
-if($http->hasSessionVariable('NGConnectUserID') && $http->hasSessionVariable('NGConnectAuthResult'))
+$runView = false;
+if($http->hasSessionVariable('NGConnectUserID') && $http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration != 'disabled')
 {
-	if($regularRegistration != 'disabled')
+	$authResult = $http->sessionVariable('NGConnectAuthResult');
+	$user = eZUser::fetch($http->sessionVariable('NGConnectUserID'));
+	if($user instanceof eZUser && $user->isEnabled() && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
 	{
-		$user = eZUser::fetch($http->sessionVariable('NGConnectUserID'));
-		if($user instanceof eZUser && substr($user->Login, 0, 10) === 'ngconnect_'
-			&& $user->isEnabled() && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess'])
-			&& ($user->ContentObjectID == $currentUser->ContentObjectID || $regularRegistration != 'optional'))
+		if($regularRegistration == 'optional')
 		{
-			$authResult = $http->sessionVariable('NGConnectAuthResult');
-			$accessAllowed = true;
+			$user->loginCurrent();
+
+			if(substr($user->Login, 0, 10) === 'ngconnect_')
+			{
+				$runView = true;
+			}
 		}
+		else
+		{
+			eZUser::logoutCurrent();
+			$runView = true;
+		}
+	}
+	else
+	{
+		eZUser::logoutCurrent();
 	}
 }
 
-if($accessAllowed)
+if($runView)
 {
-	if($http->hasPostVariable('LoginButton') && $http->hasPostVariable('Login') && $http->hasPostVariable('Password'))
+	if($http->hasPostVariable('LoginButton'))
 	{
 		//user is trying to connect to the existing account
 
@@ -140,7 +150,6 @@ if($accessAllowed)
 
 	$tpl->setVariable('ngconnect_user', $user);
 	$tpl->setVariable('network_email', trim($authResult['email']));
-	$tpl->setVariable('current_user', $currentUser);
 
 	if(isset($badLogin) && $badLogin)
 		$tpl->setVariable('bad_login', true);
