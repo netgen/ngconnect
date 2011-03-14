@@ -126,6 +126,7 @@ class ngConnectAuthTumblr extends ngConnectAuthBase
 		$name = $tumbleLog->getAttribute('name');
 		$result = array(
 			'status'				=> 'success',
+			'login_method'			=> 'tumblr',
 			'id'					=> $name,
 			'first_name'			=> $name,
 			'last_name'				=> $name,

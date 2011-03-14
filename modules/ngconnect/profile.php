@@ -10,8 +10,7 @@ $currentUser = eZUser::currentUser();
 //Couple of sanity checks to see if view can run
 
 $accessAllowed = false;
-if($http->hasSessionVariable('NGConnectUserID') && $http->hasSessionVariable('NGConnectLoginMethod')
-	&& $http->hasSessionVariable('NGConnectNetworkUserID') && $http->hasSessionVariable('NGConnectNetworkEmail'))
+if($http->hasSessionVariable('NGConnectUserID') && $http->hasSessionVariable('NGConnectAuthResult'))
 {
 	if($regularRegistration != 'disabled')
 	{
@@ -20,6 +19,7 @@ if($http->hasSessionVariable('NGConnectUserID') && $http->hasSessionVariable('NG
 			&& $user->isEnabled() && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess'])
 			&& ($user->ContentObjectID == $currentUser->ContentObjectID || $regularRegistration != 'optional'))
 		{
+			$authResult = $http->sessionVariable('NGConnectAuthResult');
 			$accessAllowed = true;
 		}
 	}
@@ -43,7 +43,7 @@ if($accessAllowed)
 			{
 				eZUser::logoutCurrent();
 				$userToLogin->loginCurrent();
-				ngConnectFunctions::connectUser($userToLogin->ContentObjectID, $http->sessionVariable('NGConnectLoginMethod'), $http->sessionVariable('NGConnectNetworkUserID'));
+				ngConnectFunctions::connectUser($userToLogin->ContentObjectID, $authResult['login_method'], $authResult['id']);
 				redirect($http, $module);
 			}
 			else
@@ -110,13 +110,13 @@ if($accessAllowed)
 			$user->setAttribute('password_hash_type', eZUser::hashType());
 			$user->store();
 
-			ngConnectFunctions::connectUser($user->ContentObjectID, $http->sessionVariable('NGConnectLoginMethod'), $http->sessionVariable('NGConnectNetworkUserID'));
+			ngConnectFunctions::connectUser($user->ContentObjectID, $authResult['login_method'], $authResult['id']);
 
 			$db->commit();
 
 			$http->removeSessionVariable('NGConnectStartedRegistration');
 
-			if($http->sessionVariable('NGConnectNetworkEmail') == '' || $email != $http->sessionVariable('NGConnectNetworkEmail'))
+			if($authResult['email'] == '' || $email != $authResult['email'])
 			{
 				//we only validate the account if no email was provided by social network or entered email is not the same
 				//as the one from social network
@@ -124,9 +124,7 @@ if($accessAllowed)
 				ngConnectUserActivation::processUserActivation($user, $password);
 
 				$http->removeSessionVariable('NGConnectUserID');
-				$http->removeSessionVariable('NGConnectLoginMethod');
-				$http->removeSessionVariable('NGConnectNetworkUserID');
-				$http->removeSessionVariable('NGConnectNetworkEmail');
+				$http->removeSessionVariable('NGConnectAuthResult');
 
 				return $module->redirectToView('success');
 			}
@@ -141,7 +139,7 @@ if($accessAllowed)
 	$tpl = eZTemplate::factory();
 
 	$tpl->setVariable('ngconnect_user', $user);
-	$tpl->setVariable('network_email', trim($http->sessionVariable('NGConnectNetworkEmail')));
+	$tpl->setVariable('network_email', trim($authResult['email']));
 	$tpl->setVariable('current_user', $currentUser);
 
 	if(isset($badLogin) && $badLogin)
@@ -172,9 +170,7 @@ function redirect($http, $module, $clearSession = true)
 	if($clearSession)
 	{
 		$http->removeSessionVariable('NGConnectUserID');
-		$http->removeSessionVariable('NGConnectLoginMethod');
-		$http->removeSessionVariable('NGConnectNetworkUserID');
-		$http->removeSessionVariable('NGConnectNetworkEmail');
+		$http->removeSessionVariable('NGConnectAuthResult');
 	}
 
 	if($http->hasSessionVariable('NGConnectLastAccessURI'))

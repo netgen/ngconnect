@@ -13,9 +13,7 @@ $debugEnabled = (trim($ngConnectINI->variable('ngconnect', 'DebugEnabled')) == '
 //we don't allow ngconnect/profile to run by default
 $http->removeSessionVariable('NGConnectRedirectToProfile');
 $http->removeSessionVariable('NGConnectUserID');
-$http->removeSessionVariable('NGConnectLoginMethod');
-$http->removeSessionVariable('NGConnectNetworkUserID');
-$http->removeSessionVariable('NGConnectNetworkEmail');
+$http->removeSessionVariable('NGConnectAuthResult');
 
 if(function_exists('curl_init') && function_exists('json_decode'))
 {
@@ -95,9 +93,7 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 								if($regularRegistration == 'optional') $user->loginCurrent();
 
 								$http->setSessionVariable('NGConnectUserID', $user->ContentObjectID);
-								$http->setSessionVariable('NGConnectLoginMethod', $loginMethod);
-								$http->setSessionVariable('NGConnectNetworkUserID', $result['id']);
-								$http->setSessionVariable('NGConnectNetworkEmail', $result['email']);
+								$http->setSessionVariable('NGConnectAuthResult', $result);
 
 								if($loginWindowType == 'page')
 								{

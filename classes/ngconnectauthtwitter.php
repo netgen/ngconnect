@@ -109,6 +109,7 @@ class ngConnectAuthTwitter extends ngConnectAuthBase
 
 		$result = array(
 			'status'				=> 'success',
+			'login_method'			=> 'twitter',
 			'id'					=> $user->id,
 			'first_name'			=> isset($user->name) ? $user->name : '',
 			'last_name'				=> '',

@@ -126,6 +126,7 @@ class ngConnectAuthFacebook extends ngConnectAuthBase
 
 		$result = array(
 			'status'				=> 'success',
+			'login_method'			=> 'facebook',
 			'id'					=> $user['id'],
 			'first_name'			=> isset($user['first_name']) ? $user['first_name'] : '',
 			'last_name'				=> isset($user['last_name']) ? $user['last_name'] : '',
