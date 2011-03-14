@@ -1,6 +1,6 @@
 <?php
 
-class ngConnectAuthFacebook extends ngConnectAuthBase
+class ngConnectAuthFacebook implements INGConnectAuthInterface
 {
 	const AUTH_URI = 'https://www.facebook.com/dialog/oauth?display=%display%&client_id=%app_id%&redirect_uri=%site_url%&scope=%permissions%&state=%state%';
 	const TOKEN_URI = 'https://graph.facebook.com/oauth/access_token?client_id=%app_id%&redirect_uri=%site_url%&client_secret=%app_secret%&code=%code%';

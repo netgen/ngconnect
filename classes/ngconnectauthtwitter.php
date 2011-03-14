@@ -1,6 +1,6 @@
 <?php
 
-class ngConnectAuthTwitter extends ngConnectAuthBase
+class ngConnectAuthTwitter implements INGConnectAuthInterface
 {
 	const CALLBACK_URI_PART = 'ngconnect/callback/twitter';
 	const TWITTER_USER_API_URI = 'account/verify_credentials';

@@ -26,10 +26,11 @@ $debugEnabled = (trim($ngConnectINI->variable('ngconnect', 'DebugEnabled')) == '
 
 if(function_exists('curl_init') && function_exists('json_decode'))
 {
-	if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]))
+	if(in_array($loginMethod, $availableLoginMethods) && isset($authHandlerClasses[$loginMethod]) && class_exists(trim($authHandlerClasses[$loginMethod])))
 	{
-		$authHandler = ngConnectAuthBase::instance(trim($authHandlerClasses[$loginMethod]));
-		if($authHandler instanceof ngConnectAuthBase)
+		$authHandlerClassName = trim($authHandlerClasses[$loginMethod]);
+		$authHandler = new $authHandlerClassName();
+		if($authHandler instanceof INGConnectAuthInterface)
 		{
 			$currentUser = eZUser::currentUser();
 			if($currentUser->isAnonymous()

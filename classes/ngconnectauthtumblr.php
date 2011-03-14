@@ -1,6 +1,6 @@
 <?php
 
-class ngConnectAuthTumblr extends ngConnectAuthBase
+class ngConnectAuthTumblr implements INGConnectAuthInterface
 {
 	const CALLBACK_URI_PART = 'ngconnect/callback/tumblr';
 	const TUMBLR_USER_API_URI = 'account/verify_credentials';
