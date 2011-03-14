@@ -233,6 +233,20 @@ class ngConnectFunctions
 
 		return $data;
 	}
+
+	public static function connectUser($userID, $loginMethod, $networkUserID)
+	{
+		$ngConnect = ngConnect::fetch($userID, $loginMethod, $networkUserID);
+		if(!($ngConnect instanceof ngConnect))
+		{
+			$ngConnect = new ngConnect(array(
+				'user_id'				=> $userID,
+				'login_method'			=> $loginMethod,
+				'network_user_id'		=> $networkUserID
+			));
+			$ngConnect->store();
+		}
+	}
 }
 
 ?>

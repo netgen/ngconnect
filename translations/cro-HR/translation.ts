@@ -55,6 +55,18 @@
         <source>Don't ask me again</source>
         <translation>Ne pitaj me više</translation>
     </message>
+    <message>
+        <source>Login</source>
+        <translation>Prijava</translation>
+    </message>
+    <message>
+        <source>Login to existing account</source>
+        <translation>Prijava na postojeći račun</translation>
+    </message>
+    <message>
+        <source>Create new account</source>
+        <translation>Otvaranje novog računa</translation>
+    </message>
 </context>
 <context>
 	<name>extension/ngconnect/ngconnect/success</name>

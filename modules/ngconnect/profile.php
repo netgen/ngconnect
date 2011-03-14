@@ -21,20 +21,51 @@ if($http->hasSessionVariable('NGConnectUserID') && $http->hasSessionVariable('NG
 
 if($accessAllowed)
 {
-	if($http->hasPostVariable('SkipButton'))
+	if($http->hasPostVariable('LoginButton'))
+	{
+		if($http->hasPostVariable('Login') && $http->hasPostVariable('Password'))
+		{
+			$badLogin = false;
+			$loginNotAllowed = false;
+			$login = trim($http->postVariable('Login'));
+			$password = trim($http->postVariable('Password'));
+
+			$userToLogin = eZUser::fetchByName($login);
+			if($userToLogin instanceof eZUser && $userToLogin->PasswordHash == eZUser::createHash($login, $password, eZUser::site(), eZUser::hashType()))
+			{
+				if($userToLogin->isEnabled() && $userToLogin->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+				{
+					eZUser::logoutCurrent();
+					$userToLogin->loginCurrent();
+					ngConnectFunctions::connectUser($userToLogin->ContentObjectID, $http->sessionVariable('NGConnectLoginMethod'), $http->sessionVariable('NGConnectNetworkUserID'));
+					redirect($http, $module);
+				}
+				else
+				{
+					$badLogin = false;
+					$loginNotAllowed = true;
+				}
+			}
+			else
+			{
+				$badLogin = true;
+				$loginNotAllowed = false;
+			}
+		}
+	}
+	else if($http->hasPostVariable('SkipButton'))
 	{
 		if($http->hasPostVariable('DontAskMeAgain'))
 		{
-			$http->removeSessionVariable('NGConnectUserID');
-			$http->removeSessionVariable('NGConnectLoginMethod');
-			$http->removeSessionVariable('NGConnectNetworkUserID');
-			$http->removeSessionVariable('NGConnectNetworkEmail');
-
 			$user->Login = '0_' . $user->Login;
 			$user->store();
-		}
 
-		redirect($http, $module);
+			redirect($http, $module);
+		}
+		else
+		{
+			redirect($http, $module, false);
+		}
 	}
 	else if($http->hasPostVariable('SaveButton'))
 	{
@@ -70,16 +101,7 @@ if($accessAllowed)
 			$user->setAttribute('password_hash_type', eZUser::hashType());
 			$user->store();
 
-			$ngConnect = ngConnect::fetch($user->ContentObjectID, $http->sessionVariable('NGConnectLoginMethod'), $http->sessionVariable('NGConnectNetworkUserID'));
-			if(!($ngConnect instanceof ngConnect))
-			{
-				$ngConnect = new ngConnect(array(
-					'user_id'				=> $user->ContentObjectID,
-					'login_method'			=> $http->sessionVariable('NGConnectLoginMethod'),
-					'network_user_id'		=> $http->sessionVariable('NGConnectNetworkUserID')
-				));
-				$ngConnect->store();
-			}
+			ngConnectFunctions::connectUser($user->ContentObjectID, $http->sessionVariable('NGConnectLoginMethod'), $http->sessionVariable('NGConnectNetworkUserID'));
 
 			$db->commit();
 
@@ -90,15 +112,15 @@ if($accessAllowed)
 				$redirectToSuccess = true;
 			}
 
-			$http->removeSessionVariable('NGConnectUserID');
-			$http->removeSessionVariable('NGConnectLoginMethod');
-			$http->removeSessionVariable('NGConnectNetworkUserID');
-			$http->removeSessionVariable('NGConnectNetworkEmail');
-
 			$http->removeSessionVariable('NGConnectStartedRegistration');
 
 			if($redirectToSuccess)
 			{
+				$http->removeSessionVariable('NGConnectUserID');
+				$http->removeSessionVariable('NGConnectLoginMethod');
+				$http->removeSessionVariable('NGConnectNetworkUserID');
+				$http->removeSessionVariable('NGConnectNetworkEmail');
+
 				$module->redirectToView('success');
 			}
 			else
@@ -113,6 +135,13 @@ if($accessAllowed)
 	$tpl = eZTemplate::factory();
 
 	$tpl->setVariable('ngconnect_user', $user);
+	$tpl->setVariable('current_user', $currentUser);
+
+	if(isset($badLogin) && $badLogin)
+		$tpl->setVariable('bad_login', true);
+	else if(isset($loginNotAllowed) && $loginNotAllowed)
+		$tpl->setVariable('login_not_allowed', true);
+
 	$tpl->setVariable('persistent_variable', false);
 
 	$Result = array();
@@ -128,16 +157,19 @@ if($accessAllowed)
 }
 else
 {
-	$http->removeSessionVariable('NGConnectUserID');
-	$http->removeSessionVariable('NGConnectLoginMethod');
-	$http->removeSessionVariable('NGConnectNetworkUserID');
-	$http->removeSessionVariable('NGConnectNetworkEmail');
-
 	redirect($http, $module);
 }
 
-function redirect($http, $module)
+function redirect($http, $module, $clearSession = true)
 {
+	if($clearSession)
+	{
+		$http->removeSessionVariable('NGConnectUserID');
+		$http->removeSessionVariable('NGConnectLoginMethod');
+		$http->removeSessionVariable('NGConnectNetworkUserID');
+		$http->removeSessionVariable('NGConnectNetworkEmail');
+	}
+
 	if($http->hasSessionVariable('NGConnectLastAccessURI'))
 	{
 		return $module->redirectTo($http->sessionVariable('NGConnectLastAccessURI'));

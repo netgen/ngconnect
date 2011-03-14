@@ -55,6 +55,18 @@
         <source>Don't ask me again</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Login</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Login to existing account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Create new account</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
 	<name>extension/ngconnect/ngconnect/success</name>

@@ -21,6 +21,12 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 
 			if($result['status'] == 'success')
 			{
+				$http->removeSessionVariable('NGConnectRedirectToProfile');
+				$http->removeSessionVariable('NGConnectUserID');
+				$http->removeSessionVariable('NGConnectLoginMethod');
+				$http->removeSessionVariable('NGConnectNetworkUserID');
+				$http->removeSessionVariable('NGConnectNetworkEmail');
+
 				$currentUser = eZUser::currentUser();
 				if($currentUser->isAnonymous())
 				{
@@ -77,14 +83,6 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 									$http->setSessionVariable('NGConnectRedirectToProfile', 'true');
 								}
 							}
-							else
-							{
-								$http->removeSessionVariable('NGConnectRedirectToProfile');
-								$http->removeSessionVariable('NGConnectUserID');
-								$http->removeSessionVariable('NGConnectLoginMethod');
-								$http->removeSessionVariable('NGConnectNetworkUserID');
-								$http->removeSessionVariable('NGConnectNetworkEmail');
-							}
 						}
 						else
 						{
@@ -94,16 +92,7 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 				}
 				else
 				{
-					$ngConnect = ngConnect::fetch($currentUser->ContentObjectID, $loginMethod, $result['id']);
-					if(!($ngConnect instanceof ngConnect))
-					{
-						$ngConnect = new ngConnect(array(
-							'user_id'				=> $currentUser->ContentObjectID,
-							'login_method'			=> $loginMethod,
-							'network_user_id'		=> $result['id']
-						));
-						$ngConnect->store();
-					}
+					ngConnectFunctions::connectUser($currentUser->ContentObjectID, $loginMethod, $result['id']);
 				}
 			}
 			else if($debugEnabled && isset($result['message']))
