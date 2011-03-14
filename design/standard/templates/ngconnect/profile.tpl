@@ -31,11 +31,6 @@
 		</div>
 	{/if}
 
-	<p>{'Welcome and thank you for signing up to our site with your social network account.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
-	<p>{'If you would like to be able to login to the site by also using a regular account, enter your details below and click the "Save" button.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
-	<p>{'If you don\'t want to create a regular account and just keep using social networks for login purposes, simply click the "Skip" button below.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
-	<p>{'You can also select "Don\'t ask me again" option and we won\'t bother you with this question ever again.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
-
 	<h2>{'Login to existing account'|i18n('extension/ngconnect/ngconnect/profile')}</h2>
 
 	<div class="block">
