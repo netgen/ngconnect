@@ -8,23 +8,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>If you are trying to login to an existing regular account, sign in with that account first and then select the option of connecting with social network of your choice.</source>
+        <source>A valid username and password is required to login.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Welcome and thank you for signing up to our site with your social network account.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>If you would like to be able to login to the site by also using a regular account, enter your details below and click the "Save" button.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>If you don't want to create a regular account and just keep using social networks for login purposes, simply click the "Skip" button below.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>You can also select "Don't ask me again" option and we won't bother you with this question ever again.</source>
+        <source>You are not allowed to access the site.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -52,11 +40,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Don't ask me again</source>
+        <source>Login</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Login</source>
+        <source>Welcome</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

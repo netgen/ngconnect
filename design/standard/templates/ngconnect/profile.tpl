@@ -9,15 +9,15 @@
 
 	{if is_set($bad_login)}
 		<div class="warning">
-			<p>{'A valid username and password is required to login.'|i18n('design/ezwebin/user/login')}</p>
+			<p>{'A valid username and password is required to login.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
 		</div>
 	{elseif is_set($login_not_allowed)}
 		<div class="warning">
-			<p>{'You are not allowed to access %1.'|i18n('design/ezwebin/user/login', , array($site_access.name))}</p>
+			<p>{'You are not allowed to access the site.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
 		</div>
 	{elseif is_set($validation_error)}
 		<div class="warning">
-			<p>{$validation_error}</p>
+			<p>{$validation_error|wash}</p>
 		</div>
 	{/if}
 
