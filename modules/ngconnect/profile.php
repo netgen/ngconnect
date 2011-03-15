@@ -99,14 +99,23 @@ if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 				$db->commit();
 
 				$http->removeSessionVariable('NGConnectStartedRegistration');
+				$http->removeSessionVariable('NGConnectAuthResult');
 
-				if($authResult['email'] == '' || $email != $authResult['email'])
+				$verifyUserType = $siteINI->variable('UserSettings', 'VerifyUserType');
+				if($verifyUserType === 'email' && $siteINI->hasVariable('UserSettings', 'VerifyUserEmail')
+					&& $siteINI->variable('UserSettings', 'VerifyUserEmail') !== 'enabled')
+				{
+					$verifyUserType = false;
+				}
+
+				if($authResult['email'] == '' || $email != $authResult['email'] && $verifyUserType)
 				{
 					// we only validate the account if no email was provided by social network or entered email is not the same
-					// as the one from social network
+					// as the one from social network and if email verification is active ofcourse
 
-					ngConnectUserActivation::processUserActivation($user, $password);
-					$http->removeSessionVariable('NGConnectAuthResult');
+					ngConnectUserActivation::processUserActivation($user,
+						$siteINI->variable('UserSettings', 'GeneratePasswordIfEmpty') == 'true' ? $password : false);
+
 					return $module->redirectToView('success');
 				}
 				else
@@ -119,9 +128,9 @@ if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 					{
 						eZUser::logoutCurrent();
 					}
-				}
 
-				redirect($http, $module);
+					redirect($http, $module);
+				}
 			}
 			else
 			{

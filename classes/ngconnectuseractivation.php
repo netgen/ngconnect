@@ -5,15 +5,11 @@ class ngConnectUserActivation
 	public static function processUserActivation($user, $password)
 	{
 		$ini = eZINI::instance();
-		$mail = new eZMail();
-		$object = $user->contentObject();
-		$receiver = $user->attribute('email');
-
 		$tpl = eZTemplate::factory();
+
 		$tpl->setVariable('user', $user);
-		$tpl->setVariable('object', $object);
-		$hostname = eZSys::hostname();
-		$tpl->setVariable('hostname', $hostname);
+		$tpl->setVariable('object', $user->contentObject());
+		$tpl->setVariable('hostname', eZSys::hostname());
 		$tpl->setVariable('password', $password);
 
 		// Check whether account activation is required.
@@ -30,7 +26,7 @@ class ngConnectUserActivation
 		if($verifyUserType === 'email') // and if it is email type
 		{
 			// Disable user account and send verification mail to the user
-			$userID = $object->attribute('id');
+			$userID = $user->attribute('contentobject_id');
 
 			// Create enable account hash and send it to the newly registered user
 			$hash = md5(mt_rand() . time() . $userID);
@@ -71,7 +67,9 @@ class ngConnectUserActivation
 		// send verification mail to user if email type or custum verify user type returned true
 		if($sendUserMail)
 		{
+			$mail = new eZMail();
 			$templateResult = $tpl->fetch('design:user/registrationinfo.tpl');
+
 			if($tpl->hasVariable('content_type'))
 				$mail->setContentType($tpl->variable('content_type'));
 
@@ -80,77 +78,18 @@ class ngConnectUserActivation
 				$emailSender = $tpl->variable('email_sender');
 			else if (!$emailSender)
 				$emailSender = $ini->variable('MailSettings', 'AdminEmail');
+			$mail->setSender($emailSender);
 
 			if($tpl->hasVariable('subject'))
 				$subject = $tpl->variable('subject');
 			else
 				$subject = ezpI18n::tr('kernel/user/register', 'Registration info');
-
-			$mail->setSender($emailSender);
-			$mail->setReceiver($receiver);
 			$mail->setSubject($subject);
+
+			$mail->setReceiver($user->attribute('email'));
+
 			$mail->setBody($templateResult);
 			$mailResult = eZMailTransport::send($mail);
-		}
-
-		$feedbackTypes = $ini->variableArray( 'UserSettings', 'RegistrationFeedback' );
-		foreach ( $feedbackTypes as $feedbackType )
-		{
-			switch ( $feedbackType )
-			{
-				case 'email':
-				{
-					// send feedback with the default email type
-					$mail = new eZMail();
-					$tpl->resetVariables();
-					$tpl->setVariable( 'user', $user );
-					$tpl->setVariable( 'object', $object );
-					$tpl->setVariable( 'hostname', $hostname );
-					$templateResult = $tpl->fetch( 'design:user/registrationfeedback.tpl' );
-
-					if ( $tpl->hasVariable( 'content_type' ) )
-						$mail->setContentType( $tpl->variable( 'content_type' ) );
-
-					$emailSender = $ini->variable( 'MailSettings', 'EmailSender' );
-					if ( $tpl->hasVariable( 'email_sender' ) )
-						$emailSender = $tpl->variable( 'email_sender' );
-					else if ( !$emailSender )
-						$emailSender = $ini->variable( 'MailSettings', 'AdminEmail' );
-
-					$feedbackReceiver = $ini->variable( 'UserSettings', 'RegistrationEmail' );
-					if ( $tpl->hasVariable( 'email_receiver' ) )
-						$feedbackReceiver = $tpl->variable( 'email_receiver' );
-					else if ( !$feedbackReceiver )
-						$feedbackReceiver = $ini->variable( 'MailSettings', 'AdminEmail' );
-
-					if ( $tpl->hasVariable( 'subject' ) )
-						$subject = $tpl->variable( 'subject' );
-					else
-						$subject = ezpI18n::tr( 'kernel/user/register', 'New user registered' );
-
-					$mail->setSender( $emailSender );
-					$mail->setReceiver( $feedbackReceiver );
-					$mail->setSubject( $subject );
-					$mail->setBody( $templateResult );
-					$mailResult = eZMailTransport::send( $mail );
-				} break;
-				default:
-				{
-					$registrationFeedbackClass = false;
-					// load custom registration feedback settings
-					if ( $ini->hasGroup( 'RegistrationFeedback_' . $feedbackType ) )
-					{
-						if ( $ini->hasVariable( 'RegistrationFeedback_' . $feedbackType, 'File' ) )
-							include_once( $ini->variable( 'RegistrationFeedback_' . $feedbackType, 'File' ) );
-						$registrationFeedbackClass = $ini->variable( 'RegistrationFeedback_' . $feedbackType, 'Class' );
-					}
-					// try to call the registration feedback class with function registrationFeedback
-					if ( $registrationFeedbackClass && method_exists( $registrationFeedbackClass, 'registrationFeedback' ) )
-						call_user_func( array( $registrationFeedbackClass, 'registrationFeedback' ), $user, $tpl, $object, $hostname );
-					else
-						eZDebug::writeWarning( "Unknown feedback type '$feedbackType'", 'ngconnect/profile' );
-				}
-			}
 		}
 	}
 
