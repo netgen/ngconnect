@@ -156,6 +156,79 @@ class ngConnectUserActivation
 
 	public static function validateUserInput($http)
 	{
+		if ( $http->hasPostVariable( 'data_user_login' ) &&
+			 $http->hasPostVariable( 'data_user_email' ) &&
+			 $http->hasPostVariable( 'data_user_password' ) &&
+			 $http->hasPostVariable( 'data_user_password_confirm' ) )
+		{
+			$loginName = $http->postVariable( 'data_user_login' );
+			$email = $http->postVariable( 'data_user_email' );
+			$password = $http->postVariable( 'data_user_password' );
+			$passwordConfirm = $http->postVariable( 'data_user_password_confirm' );
+			if ( trim( $loginName ) == '' )
+			{
+				return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'The username must be specified.' ));
+			}
+			else
+			{
+				$existUser = eZUser::fetchByName( $loginName );
+				if ( $existUser != null )
+				{
+					return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'The username already exists, please choose another one.' ));
+				}
+				// validate user email
+				$isValidate = eZMail::validate( $email );
+				if ( !$isValidate )
+				{
+					return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'The email address is not valid.' ));
+				}
+				$authenticationMatch = eZUser::authenticationMatch();
+				if ( $authenticationMatch & eZUser::AUTHENTICATE_EMAIL )
+				{
+					if ( eZUser::requireUniqueEmail() )
+					{
+						$userByEmail = eZUser::fetchByEmail( $email );
+						if ( $userByEmail != null )
+						{
+							return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'A user with this email already exists.' ));
+						}
+					}
+				}
+				// validate user name
+				if ( !eZUser::validateLoginName( $loginName, $errorText ) )
+				{
+					return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', $errorText ));
+				}
+				// validate user password
+				$ini = eZINI::instance();
+				$generatePasswordIfEmpty = $ini->variable( "UserSettings", "GeneratePasswordIfEmpty" ) == 'true';
+				if ( !$generatePasswordIfEmpty || ( $password != "" ) )
+				{
+					if ( $password == "" )
+					{
+						return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'The password cannot be empty.', 'eZUserType' ));
+					}
+					if ( $password != $passwordConfirm )
+					{
+						return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'The passwords do not match.', 'eZUserType' ));
+					}
+					if ( !eZUser::validatePassword( $password ) )
+					{
+						$minPasswordLength = $ini->hasVariable( 'UserSettings', 'MinPasswordLength' ) ? $ini->variable( 'UserSettings', 'MinPasswordLength' ) : 3;
+						return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'The password must be at least %1 characters long.', null, array( $minPasswordLength ) ));
+					}
+					if ( strtolower( $password ) == 'password' )
+					{
+						return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'The password must not be "password".' ));
+					}
+				}
+			}
+		}
+		else
+		{
+			return array('status' => 'error', 'message' => ezpI18n::tr( 'kernel/classes/datatypes', 'Input required.' ));
+		}
+
 		return array('status' => 'success');
 	}
 }

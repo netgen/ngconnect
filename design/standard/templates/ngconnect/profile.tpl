@@ -55,7 +55,7 @@
 			<input class="halfbox" type="text" size="10" name="data_user_login" value="{cond(ezhttp_hasvariable('data_user_login', 'post'), ezhttp('data_user_login', 'post'), '')}" tabindex="5" />
 
 			<label>{'E-mail'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
-			<input class="halfbox" type="text" size="10" name="data_user_email" value="{cond(ezhttp_hasvariable('data_user_email', 'post'), ezhttp('data_user_email', 'post'), $network_email)}" tabindex="6" />
+			<input class="halfbox" type="text" size="10" name="data_user_email" value="{cond(and(ezhttp_hasvariable('data_user_email', 'post'), ezhttp('data_user_email', 'post')|count), ezhttp('data_user_email', 'post'), $network_email)}" tabindex="6" />
 
 			<label>{'Password'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
 			<input class="halfbox" type="password" size="10" name="data_user_password" value="" tabindex="7" />
