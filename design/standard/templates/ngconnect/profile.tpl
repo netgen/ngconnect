@@ -23,6 +23,11 @@
 
 	<h2>{'Welcome'|i18n('extension/ngconnect/ngconnect/profile')}</h2>
 
+	<p>{'One more step is needed to activate your account and to be able to sign in using regular username and password.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
+	<p>{'If you already have a regular account, input your details under "Login to existing account" section.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
+	<p>{'If you do not have a regular account, enter your desired username and password under "Create new account" section.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
+	<p>{'If you do not wish to create a regular account, simply click the "Skip" button below, and we won\'t bother you with this again.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
+
 	<div class="block">
 		<form action={'ngconnect/profile'|ezurl} method="post">
 			<div class="buttonblock">

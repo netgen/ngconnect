@@ -8,6 +8,22 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>One more step is needed to activate your account and to be able to sign in using regular username and password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you already have a regular account, input your details under "Login to existing account" section.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you do not have a regular account, enter your desired username and password under "Create new account" section.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you do not wish to create a regular account, simply click the "Skip" button below, and we won't bother you with this again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>A valid username and password is required to login.</source>
         <translation type="unfinished"></translation>
     </message>

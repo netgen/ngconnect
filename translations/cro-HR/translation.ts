@@ -8,6 +8,22 @@
         <translation>Postavke profila</translation>
     </message>
     <message>
+        <source>One more step is needed to activate your account and to be able to sign in using regular username and password.</source>
+        <translation>Još jedan korak je potreban da biste aktivirali vaš korisnički račun i da bi ste se mogli prijavljivati koristeći obično korisničko ime i lozinku.</translation>
+    </message>
+    <message>
+        <source>If you already have a regular account, input your details under "Login to existing account" section.</source>
+        <translation>Ako već imate obični korisnički račun, unesite vaše detalje u sekciji "Prijava na postojeći račun".</translation>
+    </message>
+    <message>
+        <source>If you do not have a regular account, enter your desired username and password under "Create new account" section.</source>
+        <translation>Ako nemate obični korisnički račun, unesite željeno korisničko ime i lozinku u sekciji "Otvaranje novog računa".</translation>
+    </message>
+    <message>
+        <source>If you do not wish to create a regular account, simply click the "Skip" button below, and we won't bother you with this again.</source>
+        <translation>Ako ne želite kreirati obični korisnički račun, kliknite na dugme "Preskoči" i ubuduće vam nećemo prikazivati ovu stranicu.</translation>
+    </message>
+    <message>
         <source>A valid username and password is required to login.</source>
         <translation>Uneseno korisničko ime ili lozinka su neispravni.</translation>
     </message>
