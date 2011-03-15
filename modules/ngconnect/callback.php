@@ -9,10 +9,10 @@ $availableLoginMethods = $ngConnectINI->variable('ngconnect', 'LoginMethods');
 $authHandlerClasses = $ngConnectINI->variable('ngconnect', 'AuthHandlerClasses');
 $loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
 $debugEnabled = (trim($ngConnectINI->variable('ngconnect', 'DebugEnabled')) == 'true');
+$regularRegistration = trim($ngConnectINI->variable('ngconnect', 'RegularRegistration')) == 'enabled';
 
 //we don't allow ngconnect/profile to run by default
 $http->removeSessionVariable('NGConnectRedirectToProfile');
-$http->removeSessionVariable('NGConnectUserID');
 $http->removeSessionVariable('NGConnectAuthResult');
 
 if(function_exists('curl_init') && function_exists('json_decode'))
@@ -25,16 +25,27 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 		{
 			$result = $authHandler->processAuth();
 
-			if($result['status'] == 'success')
+			if($result['status'] == 'success' && $result['login_method'] == $loginMethod)
 			{
 				$currentUser = eZUser::currentUser();
-				if($currentUser->isAnonymous())
+				if(!$currentUser->isAnonymous())
 				{
-					$socialNetworkConnections = ngConnect::fetchBySocialNetwork($loginMethod, $result['id']);
+					// non anonymous user is requesting connection to social network
+					// who are we to say no? connect the user and bail out
+
+					ngConnectFunctions::connectUser($currentUser->ContentObjectID, $result['login_method'], $result['id']);
+				}
+				else
+				{
+					// we check if there are accounts that have a connection to social network
+					// we consider a disabled account as connected too, to allow admins to disable them and actually
+					// keep users from logging to a new account with same social network account
+
+					$socialNetworkConnections = ngConnect::fetchBySocialNetwork($result['login_method'], $result['id']);
 					if(is_array($socialNetworkConnections) && !empty($socialNetworkConnections))
 					{
-						// user has already "converted" their social network account to regular
-						// eZ Publish account, so just find it and login to it
+						// there are connected accounts, find them and login in
+
 						$usersFound = array();
 						$userIDs = array();
 						foreach($socialNetworkConnections as $connection)
@@ -63,18 +74,14 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 					}
 					else
 					{
-						//no "conversion" happened before, so we create a new account/or update existing social
-						//network account and go from there
-						$regularRegistration = $ngConnectINI->variable('ngconnect', 'RegularRegistration');
-						if($regularRegistration == 'disabled')
-						{
-							//"Conversion" of accounts is disabled
-							//we just create/update a social network account and login the user
+						// no previously connected accounts, try to find existing social network account
 
-							$user = ngConnectFunctions::createOrUpdateUser($loginMethod, $result);
-							if($user instanceof eZUser && $user->isEnabled()
-								&& $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+						$user = eZUser::fetchByName('ngconnect_' . $result['login_method'] . '_' . $result['id']);
+						if($user instanceof eZUser)
+						{
+							if($user->isEnabled() && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
 							{
+								ngConnectFunctions::updateUser($user, $result);
 								$user->loginCurrent();
 							}
 							else
@@ -84,26 +91,31 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 						}
 						else
 						{
-							//"conversion" is not disabled, we redirect to ngconnect/profile
+							// we didn't find any social network accounts, create new account
+							// redirect to ngconnect/profile if enabled
 
-							$user = ngConnectFunctions::createOrUpdateUser($loginMethod, $result);
-							$http->setSessionVariable('NGConnectUserID', ($user instanceof eZUser) ? $user->ContentObjectID : '0');
-							$http->setSessionVariable('NGConnectAuthResult', $result);
-
-							if($loginWindowType == 'page')
+							if($regularRegistration)
 							{
-								return $module->redirectToView('profile');
+								$http->setSessionVariable('NGConnectAuthResult', $result);
+								if($loginWindowType == 'page')
+									return $module->redirectToView('profile');
+								else
+									$http->setSessionVariable('NGConnectRedirectToProfile', 'true');
 							}
 							else
 							{
-								$http->setSessionVariable('NGConnectRedirectToProfile', 'true');
+								$user = ngConnectFunctions::createUser($result);
+								if($user instanceof eZUser && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+								{
+									$user->loginCurrent();
+								}
+								else
+								{
+									eZUser::logoutCurrent();
+								}
 							}
 						}
 					}
-				}
-				else
-				{
-					ngConnectFunctions::connectUser($currentUser->ContentObjectID, $loginMethod, $result['id']);
 				}
 			}
 			else if($debugEnabled && isset($result['message']))

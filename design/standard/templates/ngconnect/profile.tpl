@@ -1,7 +1,3 @@
-{def $attribute = $ngconnect_user.contentobject.data_map.user_account}
-{def $id_base = concat('ezcoa-', $attribute.contentclassattribute_id, '_', $attribute.contentclass_attribute_identifier)}
-{def $attribute_base = 'ContentObjectAttribute'}
-
 <div class="border-box">
 <div class="border-tl"><div class="border-tr"><div class="border-tc"></div></div></div>
 <div class="border-ml"><div class="border-mr"><div class="border-mc float-break">
@@ -19,30 +15,34 @@
 		<div class="warning">
 			<p>{'You are not allowed to access %1.'|i18n('design/ezwebin/user/login', , array($site_access.name))}</p>
 		</div>
-	{elseif $attribute.has_validation_error}
+	{elseif is_set($validation_error)}
 		<div class="warning">
-			<p>{$attribute.validation_error|wash}</p>
-
-			{if ezhttp_hasvariable(concat($attribute_base, '_data_user_login_', $attribute.id), 'post')}
-				{if user_exists(ezhttp(concat($attribute_base, '_data_user_login_', $attribute.id), 'post'))}
-					<p>{'If you are trying to login to an existing regular account, sign in with that account first and then select the option of connecting with social network of your choice.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
-				{/if}
-			{/if}
+			<p>{$validation_error}</p>
 		</div>
 	{/if}
+
+	<h2>{'Welcome'|i18n('extension/ngconnect/ngconnect/profile')}</h2>
+
+	<div class="block">
+		<form action={'ngconnect/profile'|ezurl} method="post">
+			<div class="buttonblock">
+				<input class="defaultbutton" type="submit" name="SkipButton" value="{'Skip'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="1" />
+			</div>
+		</form>
+	</div>
 
 	<h2>{'Login to existing account'|i18n('extension/ngconnect/ngconnect/profile')}</h2>
 
 	<div class="block">
 		<form action={'ngconnect/profile'|ezurl} method="post">
 			<label>{'Username'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
-			<input class="halfbox" type="text" size="10" name="Login" id="id1" value="{cond(ezhttp_hasvariable('Login', 'post'), ezhttp('Login', 'post'), '')}" tabindex="1" />
+			<input class="halfbox" type="text" size="10" name="Login" id="id1" value="{cond(ezhttp_hasvariable('Login', 'post'), ezhttp('Login', 'post'), '')}" tabindex="2" />
 
 			<label>{'Password'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
-			<input class="halfbox" type="password" size="10" name="Password" id="id2" value="" tabindex="2" />
+			<input class="halfbox" type="password" size="10" name="Password" id="id2" value="" tabindex="3" />
 
 			<div class="buttonblock">
-				<input class="defaultbutton" type="submit" name="LoginButton" value="{'Login'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="3" />
+				<input class="defaultbutton" type="submit" name="LoginButton" value="{'Login'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="4" />
 			</div>
 		</form>
 	</div>
@@ -52,23 +52,19 @@
 	<div class="block">
 		<form action={'ngconnect/profile'|ezurl} method="post">
 			<label>{'Username'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
-			<input class="halfbox" type="text" size="10" id="{$id_base}_login" name="{$attribute_base}_data_user_login_{$attribute.id}" value="{cond(ezhttp_hasvariable(concat($attribute_base, '_data_user_login_', $attribute.id), 'post'), ezhttp(concat($attribute_base, '_data_user_login_', $attribute.id), 'post'), '')}" tabindex="4" />
+			<input class="halfbox" type="text" size="10" name="data_user_login" value="{cond(ezhttp_hasvariable('data_user_login', 'post'), ezhttp('data_user_login', 'post'), '')}" tabindex="5" />
 
 			<label>{'E-mail'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
-			<input class="halfbox" type="text" size="10" id="{$id_base}_email" name="{$attribute_base}_data_user_email_{$attribute.id}" value="{cond(ezhttp_hasvariable(concat($attribute_base, '_data_user_email_', $attribute.id), 'post'), ezhttp(concat($attribute_base, '_data_user_email_', $attribute.id), 'post'), $network_email)}" tabindex="5" />
+			<input class="halfbox" type="text" size="10" name="data_user_email" value="{cond(ezhttp_hasvariable('data_user_email', 'post'), ezhttp('data_user_email', 'post'), $network_email)}" tabindex="6" />
 
 			<label>{'Password'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
-			<input class="halfbox" type="password" size="10" id="{$id_base}_password" name="{$attribute_base}_data_user_password_{$attribute.id}" value="" tabindex="6" />
+			<input class="halfbox" type="password" size="10" name="data_user_password" value="" tabindex="7" />
 
 			<label>{'Repeat password'|i18n('extension/ngconnect/ngconnect/profile')}</label><div class="labelbreak"></div>
-			<input class="halfbox" type="password" size="10" id="{$id_base}_password_confirm" name="{$attribute_base}_data_user_password_confirm_{$attribute.id}" value="" tabindex="7" />
+			<input class="halfbox" type="password" size="10" name="data_user_password_confirm" value="" tabindex="8" />
 
 			<div class="buttonblock">
-				<input class="defaultbutton" type="submit" name="SaveButton" value="{'Save'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="8" />
-				{if ezini('ngconnect', 'RegularRegistration', 'ngconnect.ini')|eq('optional')}
-					<input class="button" type="submit" name="SkipButton" value="{'Skip'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="10" />
-					<input type="checkbox" tabindex="9" name="DontAskMeAgain" id="DontAskMeAgain" /><label for="DontAskMeAgain" style="display:inline;">{'Don\'t ask me again'|i18n('extension/ngconnect/ngconnect/profile')}</label>
-				{/if}
+				<input class="defaultbutton" type="submit" name="SaveButton" value="{'Save'|i18n('extension/ngconnect/ngconnect/profile')}" tabindex="9" />
 			</div>
 		</form>
 	</div>

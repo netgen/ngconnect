@@ -153,6 +153,11 @@ class ngConnectUserActivation
 			}
 		}
 	}
+
+	public static function validateUserInput($http)
+	{
+		return array('status' => 'success');
+	}
 }
 
 ?>

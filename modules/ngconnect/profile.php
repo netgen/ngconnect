@@ -4,45 +4,33 @@ $module = $Params['Module'];
 $http = eZHTTPTool::instance();
 $siteINI = eZINI::instance();
 $ngConnectINI = eZINI::instance('ngconnect.ini');
-$regularRegistration = $ngConnectINI->variable('ngconnect', 'RegularRegistration');
+$regularRegistration = (trim($ngConnectINI->variable('ngconnect', 'RegularRegistration')) == 'enabled');
 
-//Couple of sanity checks to see if view can run
-$runView = false;
-if($http->hasSessionVariable('NGConnectUserID') && $http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration != 'disabled')
+if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 {
 	$authResult = $http->sessionVariable('NGConnectAuthResult');
-	$user = eZUser::fetch($http->sessionVariable('NGConnectUserID'));
-	if($user instanceof eZUser && $user->isEnabled() && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+
+	if($http->hasPostVariable('SkipButton'))
 	{
-		if($regularRegistration == 'optional')
+		// user wants to skip connecting accounts
+		// again, who are we to say no? so just create the user and bail out
+
+		$user = ngConnectFunctions::createUser($authResult);
+		if($user instanceof eZUser && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
 		{
 			$user->loginCurrent();
-
-			if(substr($user->Login, 0, 10) === 'ngconnect_')
-			{
-				$runView = true;
-			}
 		}
 		else
 		{
 			eZUser::logoutCurrent();
-			$runView = true;
 		}
-	}
-	else
-	{
-		eZUser::logoutCurrent();
-	}
-}
 
-if($runView)
-{
-	if($http->hasPostVariable('LoginButton'))
+		redirect($http, $module);
+	}
+	else if($http->hasPostVariable('LoginButton'))
 	{
-		//user is trying to connect to the existing account
+		// user is trying to connect to the existing account
 
-		$badLogin = false;
-		$loginNotAllowed = false;
 		$login = trim($http->postVariable('Login'));
 		$password = trim($http->postVariable('Password'));
 
@@ -51,7 +39,6 @@ if($runView)
 		{
 			if($userToLogin->isEnabled() && $userToLogin->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
 			{
-				eZUser::logoutCurrent();
 				$userToLogin->loginCurrent();
 				ngConnectFunctions::connectUser($userToLogin->ContentObjectID, $authResult['login_method'], $authResult['id']);
 				redirect($http, $module);
@@ -68,25 +55,9 @@ if($runView)
 			$loginNotAllowed = false;
 		}
 	}
-	else if($http->hasPostVariable('SkipButton') && $regularRegistration == 'optional')
-	{
-		//user is allowed to skip only if set so by settings
-
-		if($http->hasPostVariable('DontAskMeAgain'))
-		{
-			$user->Login = '0_' . $user->Login;
-			$user->store();
-
-			redirect($http, $module);
-		}
-		else
-		{
-			redirect($http, $module, false);
-		}
-	}
 	else if($http->hasPostVariable('SaveButton'))
 	{
-		//user wants to "convert" to regular account
+		// user wants to connect by creating a new eZ Publish account
 
 		if($http->hasSessionVariable('NGConnectStartedRegistration'))
 		{
@@ -96,65 +67,84 @@ if($runView)
 		}
 		$http->setSessionVariable('NGConnectStartedRegistration', 1);
 
-		$dataMap = $user->contentObject()->dataMap();
-		$dataType = $dataMap['user_account']->dataType();
-		$validationResult = $dataType->validateObjectAttributeHTTPInput($http, 'ContentObjectAttribute', $dataMap['user_account']);
+		$validationResult = ngConnectUserActivation::validateUserInput($http);
 
-		if($validationResult === eZInputValidator::STATE_ACCEPTED)
+		if($validationResult['status'] == 'success')
 		{
-			$login = trim($http->postVariable('ContentObjectAttribute_data_user_login_' . $dataMap['user_account']->attribute('id')));
-			$email = trim($http->postVariable('ContentObjectAttribute_data_user_email_' . $dataMap['user_account']->attribute('id')));
-			$password = trim($http->postVariable('ContentObjectAttribute_data_user_password_' . $dataMap['user_account']->attribute('id')));
+			$login = trim($http->postVariable('data_user_login'));
+			$email = trim($http->postVariable('data_user_email'));
+			$password = trim($http->postVariable('data_user_password'));
 
 			if(strlen($password) == 0 && $siteINI->variable('UserSettings', 'GeneratePasswordIfEmpty') == 'true')
 			{
 				$password = $user->createPassword($siteINI->variable('UserSettings', 'GeneratePasswordLength'));
 			}
 
-			$db = eZDB::instance();
-			$db->begin();
-
-			$user->setAttribute('login', $login);
-			$user->setAttribute('email', $email);
-			$user->setAttribute('password_hash', eZUser::createHash($login, $password, eZUser::site(), eZUser::hashType()));
-			$user->setAttribute('password_hash_type', eZUser::hashType());
-			$user->store();
-
-			ngConnectFunctions::connectUser($user->ContentObjectID, $authResult['login_method'], $authResult['id']);
-
-			$db->commit();
-
-			$http->removeSessionVariable('NGConnectStartedRegistration');
-
-			if($authResult['email'] == '' || $email != $authResult['email'])
+			$user = ngConnectFunctions::createUser($authResult);
+			if($user instanceof eZUser)
 			{
-				//we only validate the account if no email was provided by social network or entered email is not the same
-				//as the one from social network
+				// we created the new account, but still need to set things up so users can login using a regular login form
 
-				ngConnectUserActivation::processUserActivation($user, $password);
+				$db = eZDB::instance();
+				$db->begin();
 
-				$http->removeSessionVariable('NGConnectUserID');
-				$http->removeSessionVariable('NGConnectAuthResult');
+				$user->setAttribute('login', $login);
+				$user->setAttribute('email', $email);
+				$user->setAttribute('password_hash', eZUser::createHash($login, $password, eZUser::site(), eZUser::hashType()));
+				$user->setAttribute('password_hash_type', eZUser::hashType());
+				$user->store();
 
-				return $module->redirectToView('success');
+				ngConnectFunctions::connectUser($user->ContentObjectID, $authResult['login_method'], $authResult['id']);
+
+				$db->commit();
+
+				$http->removeSessionVariable('NGConnectStartedRegistration');
+
+				if($authResult['email'] == '' || $email != $authResult['email'])
+				{
+					// we only validate the account if no email was provided by social network or entered email is not the same
+					// as the one from social network
+
+					ngConnectUserActivation::processUserActivation($user, $password);
+					$http->removeSessionVariable('NGConnectAuthResult');
+					return $module->redirectToView('success');
+				}
+				else
+				{
+					if($user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+					{
+						$user->loginCurrent();
+					}
+					else
+					{
+						eZUser::logoutCurrent();
+					}
+				}
+
+				redirect($http, $module);
 			}
-
-			if($regularRegistration != 'optional') $user->loginCurrent();
-			redirect($http, $module);
+			else
+			{
+				eZUser::logoutCurrent();
+			}
+		}
+		else
+		{
+			$validationError = $validationResult['message'];
 		}
 
 		$http->removeSessionVariable('NGConnectStartedRegistration');
 	}
 
 	$tpl = eZTemplate::factory();
-
-	$tpl->setVariable('ngconnect_user', $user);
 	$tpl->setVariable('network_email', trim($authResult['email']));
 
 	if(isset($badLogin) && $badLogin)
 		$tpl->setVariable('bad_login', true);
 	else if(isset($loginNotAllowed) && $loginNotAllowed)
 		$tpl->setVariable('login_not_allowed', true);
+	else if(isset($validationError))
+		$tpl->setVariable('validation_error', $validationError);
 
 	$tpl->setVariable('persistent_variable', false);
 
@@ -174,14 +164,9 @@ else
 	redirect($http, $module);
 }
 
-function redirect($http, $module, $clearSession = true)
+function redirect($http, $module)
 {
-	if($clearSession)
-	{
-		$http->removeSessionVariable('NGConnectUserID');
-		$http->removeSessionVariable('NGConnectAuthResult');
-	}
-
+	$http->removeSessionVariable('NGConnectAuthResult');
 	if($http->hasSessionVariable('NGConnectLastAccessURI'))
 	{
 		return $module->redirectTo($http->sessionVariable('NGConnectLastAccessURI'));
