@@ -6,7 +6,7 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
 	const TOKEN_URI = 'https://graph.facebook.com/oauth/access_token?client_id=%app_id%&redirect_uri=%site_url%&client_secret=%app_secret%&code=%code%';
 	const GRAPH_URI = 'https://graph.facebook.com/me?%access_token%';
 	const PICTURE_URI = 'http://graph.facebook.com/%user_id%/picture?type=large';
-	const CALLBACK_URI_PART = 'ngconnect/callback/facebook';
+	const CALLBACK_URI_PART = '/ngconnect/callback/facebook';
 
 	public function getRedirectUri()
 	{
@@ -27,7 +27,7 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
 		if($loginWindowType == 'popup')
 		{
 			$displayType = 'popup';
-			$callbackUri = 'layout/set/ngconnect/' . self::CALLBACK_URI_PART;
+			$callbackUri = '/layout/set/ngconnect' . self::CALLBACK_URI_PART;
 		}
 		eZURI::transformURI($callbackUri, false, 'full');
 
@@ -83,7 +83,7 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
 		$loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
 		if($loginWindowType == 'popup')
 		{
-			$callbackUri = 'layout/set/ngconnect/' . self::CALLBACK_URI_PART;
+			$callbackUri = '/layout/set/ngconnect' . self::CALLBACK_URI_PART;
 		}
 		eZURI::transformURI($callbackUri, false, 'full');
 

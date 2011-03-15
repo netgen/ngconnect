@@ -2,7 +2,7 @@
 
 class ngConnectAuthTumblr implements INGConnectAuthInterface
 {
-	const CALLBACK_URI_PART = 'ngconnect/callback/tumblr';
+	const CALLBACK_URI_PART = '/ngconnect/callback/tumblr';
 	const TUMBLR_USER_API_URI = 'account/verify_credentials';
 
 	public function getRedirectUri()
@@ -23,7 +23,7 @@ class ngConnectAuthTumblr implements INGConnectAuthInterface
 		$loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
 		if($loginWindowType == 'popup')
 		{
-			$callbackUri = 'layout/set/ngconnect/' . self::CALLBACK_URI_PART;
+			$callbackUri = '/layout/set/ngconnect' . self::CALLBACK_URI_PART;
 		}
 
 		$state = md5(session_id() . (string) time());
