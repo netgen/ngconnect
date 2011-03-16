@@ -45,14 +45,12 @@ if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 			}
 			else
 			{
-				$badLogin = false;
-				$loginNotAllowed = true;
+				$validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'You are not allowed to access the site.' );
 			}
 		}
 		else
 		{
-			$badLogin = true;
-			$loginNotAllowed = false;
+			$validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'A valid username and password is required to login.' );
 		}
 	}
 	else if($http->hasPostVariable('SaveButton'))
@@ -148,11 +146,7 @@ if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 	$tpl = eZTemplate::factory();
 	$tpl->setVariable('network_email', trim($authResult['email']));
 
-	if(isset($badLogin) && $badLogin)
-		$tpl->setVariable('bad_login', true);
-	else if(isset($loginNotAllowed) && $loginNotAllowed)
-		$tpl->setVariable('login_not_allowed', true);
-	else if(isset($validationError))
+	if(isset($validationError))
 		$tpl->setVariable('validation_error', $validationError);
 
 	$tpl->setVariable('persistent_variable', false);

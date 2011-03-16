@@ -7,15 +7,7 @@
 		<h1 class="long">{'Profile setup'|i18n('extension/ngconnect/ngconnect/profile')}</h1>
 	</div>
 
-	{if is_set($bad_login)}
-		<div class="warning">
-			<p>{'A valid username and password is required to login.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
-		</div>
-	{elseif is_set($login_not_allowed)}
-		<div class="warning">
-			<p>{'You are not allowed to access the site.'|i18n('extension/ngconnect/ngconnect/profile')}</p>
-		</div>
-	{elseif is_set($validation_error)}
+	{if is_set($validation_error)}
 		<div class="warning">
 			<p>{$validation_error|wash}</p>
 		</div>
