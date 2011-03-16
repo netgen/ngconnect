@@ -47,17 +47,17 @@ if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 		$login = trim($http->postVariable('Login'));
 		$password = trim($http->postVariable('Password'));
 
-		$userToLogin = eZUser::fetchByName($login);
-		if($userToLogin instanceof eZUser && $userToLogin->PasswordHash == eZUser::createHash($login, $password, eZUser::site(), eZUser::hashType()))
+		$userToLogin = eZUser::loginUser($login, $password);
+		if($userToLogin instanceof eZUser)
 		{
-			if($userToLogin->isEnabled() && $userToLogin->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+			if($userToLogin->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
 			{
-				$userToLogin->loginCurrent();
 				ngConnectFunctions::connectUser($userToLogin->ContentObjectID, $authResult['login_method'], $authResult['id']);
 				redirect($http, $module);
 			}
 			else
 			{
+				eZUser::logoutCurrent();
 				$validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'You are not allowed to access the site.' );
 			}
 		}
