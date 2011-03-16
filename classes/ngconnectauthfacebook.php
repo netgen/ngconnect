@@ -5,7 +5,7 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
 	const AUTH_URI = 'https://www.facebook.com/dialog/oauth?display=%display%&client_id=%app_id%&redirect_uri=%site_url%&scope=%permissions%&state=%state%';
 	const TOKEN_URI = 'https://graph.facebook.com/oauth/access_token?client_id=%app_id%&redirect_uri=%site_url%&client_secret=%app_secret%&code=%code%';
 	const GRAPH_URI = 'https://graph.facebook.com/me?%access_token%';
-	const PICTURE_URI = 'http://graph.facebook.com/%user_id%/picture?type=large';
+	const PICTURE_URI = 'http://graph.facebook.com/%user_id%/picture';
 	const CALLBACK_URI_PART = '/ngconnect/callback/facebook';
 
 	public function getRedirectUri()
@@ -124,6 +124,11 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
 			return array('status' => 'error', 'message' => 'Invalid Facebook user.');
 		}
 
+		$pictureUri = self::PICTURE_URI;
+		$imageSize = trim($ngConnectINI->variable('LoginMethod_facebook', 'ImageSize'));
+		if($imageSize == 'original')
+			$pictureUri = $pictureUri . '?type=large';
+
 		$result = array(
 			'status'				=> 'success',
 			'login_method'			=> 'facebook',
@@ -131,7 +136,7 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
 			'first_name'			=> isset($user['first_name']) ? $user['first_name'] : '',
 			'last_name'				=> isset($user['last_name']) ? $user['last_name'] : '',
 			'email'					=> isset($user['email']) ? $user['email'] : '',
-			'picture'				=> str_replace('%user_id%', $user['id'], self::PICTURE_URI)
+			'picture'				=> str_replace('%user_id%', $user['id'], $pictureUri)
 		);
 
 		return $result;

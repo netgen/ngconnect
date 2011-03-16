@@ -107,6 +107,23 @@ class ngConnectAuthTwitter implements INGConnectAuthInterface
 			return array('status' => 'error', 'message' => 'Invalid Twitter user.');
 		}
 
+		if(isset($user->profile_image_url) && strlen($user->profile_image_url) > 0)
+		{
+			$pictureUri = $user->profile_image_url;
+			$imageSize = trim($ngConnectINI->variable('LoginMethod_facebook', 'ImageSize'));
+			if($imageSize == 'original')
+			{
+				//Hm... it seems there's no way to get the full size image through API
+				//Even https://api.twitter.com/1/users/profile_image/username never returns full version
+				//Replacing is not safe, but at least we're replacing last occurrence
+				$pictureUri = substr_replace($user->profile_image_url, '', strrpos($user->profile_image_url, '_normal'), 7);
+			}
+		}
+		else
+		{
+			$pictureUri = '';
+		}
+
 		$result = array(
 			'status'				=> 'success',
 			'login_method'			=> 'twitter',
@@ -114,12 +131,7 @@ class ngConnectAuthTwitter implements INGConnectAuthInterface
 			'first_name'			=> isset($user->name) ? $user->name : '',
 			'last_name'				=> '',
 			'email'					=> '',
-			//Hm... it seems there's no way to get the full size image through API
-			//Even https://api.twitter.com/1/users/profile_image/username never returns full version
-			//Replacing is not safe, but at least we're replacing last occurrence
-			'picture'				=> (isset($user->profile_image_url) && strlen($user->profile_image_url) > 0) ?
-				substr_replace($user->profile_image_url, '', strrpos($user->profile_image_url, '_normal'), 7) : ''
-				//str_replace('_normal', '', $user->profile_image_url) : ''
+			'picture'				=> $pictureUri
 		);
 
 		return $result;
