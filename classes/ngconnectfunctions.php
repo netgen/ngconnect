@@ -81,12 +81,20 @@ class ngConnectFunctions
 		$userLogin = 'ngconnect_' . $authResult['login_method'] . '_' . $authResult['id'];
 		$userPassword = (string) rand() . 'ngconnect_' . $authResult['login_method'] . '_' . $authResult['id'] . (string) rand();
 
+		if(eZUser::requireUniqueEmail())
+			$userExists = eZUser::fetchByEmail($authResult['email']) instanceof eZUser;
+		else
+			$userExists = false;
+
+		if(strlen($authResult['email']) == 0 || $userExists)
+			$email = md5('ngconnect_' . $authResult['login_method'] . '_' . $authResult['id']) . '@localhost.local';
+		else
+			$email = $authResult['email'];
+
 		$user = new eZUser(
 			array(
 				'contentobject_id'		=> $contentObject->attribute('id'),
-				'email'					=> strlen($authResult['email']) > 0 ?
-											$authResult['email'] :
-											md5('ngconnect_' . $authResult['login_method'] . '_' . $authResult['id']) . '@localhost.local',
+				'email'					=> $email,
 				'login'					=> $userLogin,
 				'password_hash'			=> md5("$userLogin\n$userPassword"),
 				'password_hash_type'	=> 1
@@ -165,14 +173,21 @@ class ngConnectFunctions
 			}
 		}
 
-		$user->setAttribute('email', strlen($authResult['email']) > 0 ? $authResult['email'] :
-										md5('ngconnect_' . $authResult['login_method'] . '_' . $authResult['id']) . '@localhost.local');
-		$user->store();
+		if($authResult['email'] != $user->Email)
+		{
+			if(eZUser::requireUniqueEmail())
+				$userExists = eZUser::fetchByEmail($authResult['email']) instanceof eZUser;
+			else
+				$userExists = false;
 
-		$userSetting = eZUserSetting::fetch($user->attribute('contentobject_id'));
-		$userSetting->setAttribute('is_enabled', true);
-		$userSetting->setAttribute('max_login', 0);
-		$userSetting->store();
+			if(strlen($authResult['email']) == 0 || $userExists)
+				$email = md5('ngconnect_' . $authResult['login_method'] . '_' . $authResult['id']) . '@localhost.local';
+			else
+				$email = $authResult['email'];
+
+			$user->setAttribute('email', $email);
+			$user->store();
+		}
 
 		$contentObject->setName($contentObject->contentClass()->contentObjectName($contentObject));
 		$contentObject->store();

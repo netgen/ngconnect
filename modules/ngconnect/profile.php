@@ -14,18 +14,31 @@ if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 	{
 		// user wants to skip connecting accounts
 		// again, who are we to say no? so just create the user and bail out
+		// however, we need to force email uniqueness, if set so by the system
 
-		$user = ngConnectFunctions::createUser($authResult);
-		if($user instanceof eZUser && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+		if(eZUser::requireUniqueEmail())
+			$userExists = eZUser::fetchByEmail($authResult['email']) instanceof eZUser;
+		else
+			$userExists = false;
+
+		if(!$userExists)
 		{
-			$user->loginCurrent();
+			$user = ngConnectFunctions::createUser($authResult);
+			if($user instanceof eZUser && $user->canLoginToSiteAccess($GLOBALS['eZCurrentAccess']))
+			{
+				$user->loginCurrent();
+			}
+			else
+			{
+				eZUser::logoutCurrent();
+			}
+
+			redirect($http, $module);
 		}
 		else
 		{
-			eZUser::logoutCurrent();
+			$validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'User with an email address supplied by your social network already exists. Try logging in instead.' );
 		}
-
-		redirect($http, $module);
 	}
 	else if($http->hasPostVariable('LoginButton'))
 	{
