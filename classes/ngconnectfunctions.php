@@ -6,7 +6,6 @@ class ngConnectFunctions
 	{
 		$ngConnectINI = eZINI::instance('ngconnect.ini');
 		$siteINI = eZINI::instance('site.ini');
-		$storageDir = eZSys::storageDirectory() . '/ngconnect';
 
 		$defaultUserPlacement = $ngConnectINI->variable('LoginMethod_' . $authResult['login_method'], 'DefaultUserPlacement');
 		$placementNode = eZContentObjectTreeNode::fetch($defaultUserPlacement);
@@ -45,32 +44,7 @@ class ngConnectFunctions
 		$version->store();
 
 		$dataMap = $version->dataMap();
-
-		if(isset($dataMap['first_name']))
-		{
-			$dataMap['first_name']->fromString($authResult['first_name']);
-			$dataMap['first_name']->store();
-		}
-
-		if(isset($dataMap['last_name']))
-		{
-			$dataMap['last_name']->fromString($authResult['last_name']);
-			$dataMap['last_name']->store();
-		}
-
-		if(isset($dataMap['image']) && strlen($authResult['picture']) > 0)
-		{
-			if(!(file_exists($storageDir))) mkdir($storageDir);
-			$fileName = $storageDir . '/' . $authResult['login_method'] . '_' . $authResult['id'];
-
-			$image = ngConnectFunctions::fetchDataFromUrl($authResult['picture'], true, $fileName);
-			if($image)
-			{
-				$dataMap['image']->fromString($fileName);
-				$dataMap['image']->store();
-				unlink($fileName);
-			}
-		}
+		self::fillUserObject($version->dataMap(), $authResult);
 
 		if(!isset($dataMap['user_account']))
 		{
@@ -128,7 +102,6 @@ class ngConnectFunctions
 
 	public static function updateUser($user, $authResult)
 	{
-		$storageDir = eZSys::storageDirectory() . '/ngconnect';
 		$currentTimeStamp = eZDateTime::currentTimeStamp();
 
 		$contentObject = $user->contentObject();
@@ -145,33 +118,7 @@ class ngConnectFunctions
 		$version->setAttribute('modified', $currentTimeStamp);
 		$version->store();
 
-		$dataMap = $version->dataMap();
-
-		if(isset($dataMap['first_name']))
-		{
-			$dataMap['first_name']->fromString($authResult['first_name']);
-			$dataMap['first_name']->store();
-		}
-
-		if(isset($dataMap['last_name']))
-		{
-			$dataMap['last_name']->fromString($authResult['last_name']);
-			$dataMap['last_name']->store();
-		}
-
-		if(isset($dataMap['image']) && strlen($authResult['picture']) > 0)
-		{
-			if(!(file_exists($storageDir))) mkdir($storageDir);
-			$fileName = $storageDir . '/' . $authResult['login_method'] . '_' . $authResult['id'];
-
-			$image = ngConnectFunctions::fetchDataFromUrl($authResult['picture'], true, $fileName);
-			if($image)
-			{
-				$dataMap['image']->fromString($fileName);
-				$dataMap['image']->store();
-				unlink($fileName);
-			}
-		}
+		self::fillUserObject($version->dataMap(), $authResult);
 
 		if($authResult['email'] != $user->Email)
 		{
@@ -194,6 +141,36 @@ class ngConnectFunctions
 
 		$db->commit();
 		return $user;
+	}
+
+	private static function fillUserObject($dataMap, $authResult)
+	{
+		if(isset($dataMap['first_name']))
+		{
+			$dataMap['first_name']->fromString($authResult['first_name']);
+			$dataMap['first_name']->store();
+		}
+
+		if(isset($dataMap['last_name']))
+		{
+			$dataMap['last_name']->fromString($authResult['last_name']);
+			$dataMap['last_name']->store();
+		}
+
+		if(isset($dataMap['image']) && strlen($authResult['picture']) > 0)
+		{
+			$storageDir = eZSys::storageDirectory() . '/ngconnect';
+			if(!(file_exists($storageDir))) mkdir($storageDir);
+			$fileName = $storageDir . '/' . $authResult['login_method'] . '_' . $authResult['id'];
+
+			$image = ngConnectFunctions::fetchDataFromUrl($authResult['picture'], true, $fileName);
+			if($image)
+			{
+				$dataMap['image']->fromString($fileName);
+				$dataMap['image']->store();
+				unlink($fileName);
+			}
+		}
 	}
 
 	public static function fetchDataFromUrl($url, $saveToFile = false, $fileName = '')
