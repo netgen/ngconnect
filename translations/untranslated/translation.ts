@@ -24,6 +24,18 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Account with the email address from your social network (%1) already exists. Please enter your login details below to connect to that account.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If you forgot your password, request a new one</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>here</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>A valid username and password is required to login.</source>
         <translation type="unfinished"></translation>
     </message>

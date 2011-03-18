@@ -24,6 +24,18 @@
         <translation>Ako ne želite kreirati obični korisnički račun, kliknite na dugme "Preskoči" i ubuduće vam nećemo prikazivati ovu stranicu.</translation>
     </message>
     <message>
+        <source>Account with the email address from your social network (%1) already exists. Please enter your login details below to connect to that account.</source>
+        <translation>Korisnički račun s email adresom s vaše društvene mreže (%1) već postoji. Unesite vaše korisničko ime i lozinku da biste se povezali s tim korisničkim računom.</translation>
+    </message>
+    <message>
+        <source>If you forgot your password, request a new one</source>
+        <translation>Ako ste zaboravili vašu lozinku, zatražite novu</translation>
+    </message>
+    <message>
+        <source>here</source>
+        <translation>ovdje</translation>
+    </message>
+    <message>
         <source>A valid username and password is required to login.</source>
         <translation>Uneseno korisničko ime ili lozinka su neispravni.</translation>
     </message>

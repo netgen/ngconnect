@@ -5,12 +5,13 @@ $http = eZHTTPTool::instance();
 $siteINI = eZINI::instance();
 $ngConnectINI = eZINI::instance('ngconnect.ini');
 $regularRegistration = (trim($ngConnectINI->variable('ngconnect', 'RegularRegistration')) == 'enabled');
+$forcedRedirect = $http->hasSessionVariable('NGConnectForceRedirect');
 
-if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
+if($http->hasSessionVariable('NGConnectAuthResult') && ($regularRegistration || $forcedRedirect))
 {
 	$authResult = $http->sessionVariable('NGConnectAuthResult');
 
-	if($http->hasPostVariable('SkipButton'))
+	if($http->hasPostVariable('SkipButton') && !$forcedRedirect)
 	{
 		// user wants to skip connecting accounts
 		// again, who are we to say no? so just create the user and bail out
@@ -66,7 +67,7 @@ if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 			$validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'A valid username and password is required to login.' );
 		}
 	}
-	else if($http->hasPostVariable('SaveButton'))
+	else if($http->hasPostVariable('SaveButton') && !$forcedRedirect)
 	{
 		// user wants to connect by creating a new eZ Publish account
 
@@ -158,6 +159,7 @@ if($http->hasSessionVariable('NGConnectAuthResult') && $regularRegistration)
 
 	$tpl = eZTemplate::factory();
 	$tpl->setVariable('network_email', trim($authResult['email']));
+	$tpl->setVariable('forced_redirect', $forcedRedirect);
 
 	if(isset($validationError))
 		$tpl->setVariable('validation_error', $validationError);

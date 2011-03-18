@@ -14,6 +14,7 @@ $regularRegistration = trim($ngConnectINI->variable('ngconnect', 'RegularRegistr
 //we don't allow ngconnect/profile to run by default
 $http->removeSessionVariable('NGConnectRedirectToProfile');
 $http->removeSessionVariable('NGConnectAuthResult');
+$http->removeSessionVariable('NGConnectForceRedirect');
 
 if(function_exists('curl_init') && function_exists('json_decode'))
 {
@@ -94,8 +95,17 @@ if(function_exists('curl_init') && function_exists('json_decode'))
 							// we didn't find any social network accounts, create new account
 							// redirect to ngconnect/profile if enabled
 
-							if($regularRegistration)
+							$forceRedirect = false;
+							if(eZUser::requireUniqueEmail() && eZUser::fetchByEmail($result['email']) instanceof eZUser
+								&& trim($ngConnectINI->variable('ngconnect', 'DuplicateEmailForceRedirect')) == 'enabled')
 							{
+								$forceRedirect = true;
+							}
+
+							if($regularRegistration || $forceRedirect)
+							{
+								if(!$regularRegistration && $forceRedirect)
+									$http->setSessionVariable('NGConnectForceRedirect', 'true');
 								$http->setSessionVariable('NGConnectAuthResult', $result);
 								if($loginWindowType == 'page')
 									return $module->redirectToView('profile');
