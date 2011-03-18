@@ -112,6 +112,7 @@ if($http->hasSessionVariable('NGConnectAuthResult') && ($regularRegistration || 
 
 				$http->removeSessionVariable('NGConnectStartedRegistration');
 				$http->removeSessionVariable('NGConnectAuthResult');
+				$http->removeSessionVariable('NGConnectForceRedirect');
 
 				$verifyUserType = $siteINI->variable('UserSettings', 'VerifyUserType');
 				if($verifyUserType === 'email' && $siteINI->hasVariable('UserSettings', 'VerifyUserEmail')
@@ -185,6 +186,7 @@ else
 function redirect($http, $module)
 {
 	$http->removeSessionVariable('NGConnectAuthResult');
+	$http->removeSessionVariable('NGConnectForceRedirect');
 	if($http->hasSessionVariable('NGConnectLastAccessURI'))
 	{
 		return $module->redirectTo($http->sessionVariable('NGConnectLastAccessURI'));
