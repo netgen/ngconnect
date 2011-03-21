@@ -2,9 +2,9 @@
 {def $user = fetch(user, current_user) $method_name = ''}
 {def $is_user_anonymous = $user.contentobject_id|eq(ezini('UserSettings', 'AnonymousUserID'))}
 {def $login_methods = ezini('ngconnect', 'LoginMethods', 'ngconnect.ini')}
+{def $login_window_type = ezini('ngconnect', 'LoginWindowType', 'ngconnect.ini')|trim}
 
 {if $login_methods|count}
-	{def $login_window_type = ezini('ngconnect', 'LoginWindowType', 'ngconnect.ini')|trim}
 	<span id="ngconnect">
 		{foreach $login_methods as $l}
 			{if or($is_user_anonymous, and($is_user_anonymous|not, fetch(ngconnect, user_has_connection, hash(user_id, $user.contentobject_id, login_method, $l))|not))}
@@ -19,4 +19,4 @@
 	</span>
 {/if}
 
-{undef}
+{undef $user $is_user_anonymous $login_methods $login_window_type}
