@@ -4,6 +4,7 @@ For documentation see: doc/Netgen Connect doc.pdf
 For install instructions see: doc/INSTALL (also in documentation PDF)
 For license see: LICENSE
 For configuration instructions see: settings/ngconnect.ini (also in documentation PDF)
+For changelog see: doc/CHANGELOG
 
 Netgen Connect is a simple eZ Publish extension able to provide user sign in
 by using social network authentication and authorization. (Facebook Connect
