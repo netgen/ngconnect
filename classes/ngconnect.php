@@ -50,16 +50,12 @@ class ngConnect extends eZPersistentObject
 
 	static function userHasConnection($userID, $loginMethod)
 	{
-		$user = eZUser::fetch($userID);
-		if(substr($user->Login, 0, 10) === 'ngconnect_'
-			|| substr($user->Login, 0, 12) === '0_ngconnect_')
-		{
-			return true;
-		}
-
 		$count = eZPersistentObject::count(self::definition(), array('user_id' => $userID, 'login_method' => $loginMethod));
-
 		if($count > 0)
+			return true;
+
+		$user = eZUser::fetch($userID);
+		if(substr($user->Login, 0, 10 + strlen($loginMethod)) === 'ngconnect_' . $loginMethod)
 			return true;
 
 		return false;
