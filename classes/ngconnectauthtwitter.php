@@ -70,7 +70,7 @@ class ngConnectAuthTwitter implements INGConnectAuthInterface
 
         $oAuthToken = trim( $http->getVariable( 'oauth_token', '' ) );
         $oAuthVerifier = trim( $http->getVariable( 'oauth_verifier', '' ) );
-        $state = trim( $http->getVariable( 'oauth_verifier', '' ) );
+        $state = trim( $http->getVariable( 'state', '' ) );
 
         if ( empty( $oAuthToken ) || empty( $oAuthVerifier ) || empty( $state ) )
         {

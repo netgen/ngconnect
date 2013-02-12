@@ -8,11 +8,11 @@ $http = eZHTTPTool::instance();
 $loginMethod = $Params['LoginMethod'];
 
 $http->removeSessionVariable( 'NGConnectLastAccessURI' );
-if ( $http->hasGetVariable( 'redirectURI' ) && !empty( $http->getVariable( 'redirectURI' ) ) )
+if ( $http->hasGetVariable( 'redirectURI' ) && strlen( $http->getVariable( 'redirectURI' ) ) > 0 )
 {
     $http->setSessionVariable( 'NGConnectLastAccessURI', urldecode( $http->getVariable( 'redirectURI' ) ) );
 }
-else if ( $http->hasSessionVariable( 'LastAccessesURI' ) && !empty( $http->sessionVariable( 'LastAccessesURI' ) ) )
+else if ( $http->hasSessionVariable( 'LastAccessesURI' ) && strlen( $http->sessionVariable( 'LastAccessesURI' ) ) > 0 )
 {
     $http->setSessionVariable( 'NGConnectLastAccessURI', $http->sessionVariable( 'LastAccessesURI' ) );
 }
