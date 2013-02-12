@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-	<name>extension/ngconnect/ngconnect/profile</name>
+    <name>extension/ngconnect/ngconnect/profile</name>
     <message>
         <source>Profile setup</source>
         <translation type="unfinished"></translation>
@@ -85,7 +85,7 @@
     </message>
 </context>
 <context>
-	<name>extension/ngconnect/ngconnect/success</name>
+    <name>extension/ngconnect/ngconnect/success</name>
     <message>
         <source>OK</source>
         <translation type="unfinished"></translation>

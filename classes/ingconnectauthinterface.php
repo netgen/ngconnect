@@ -2,9 +2,9 @@
 
 interface INGConnectAuthInterface
 {
-	public function getRedirectUri();
+    public function getRedirectUri();
 
-	public function processAuth();
+    public function processAuth();
 }
 
 ?>
