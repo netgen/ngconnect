@@ -2,8 +2,8 @@
 //
 // ## BEGIN COPYRIGHT, LICENSE AND WARRANTY NOTICE ##
 // SOFTWARE NAME: Netgen Connect
-// SOFTWARE RELEASE: 1.1
-// COPYRIGHT NOTICE: Copyright (C) 2011 Netgen d.o.o.
+// SOFTWARE RELEASE: 1.2
+// COPYRIGHT NOTICE: Copyright (C) 2011-2013 Netgen d.o.o.
 // SOFTWARE LICENSE: GNU General Public License v2.0
 // NOTICE: >
 //   This program is free software; you can redistribute it and/or
@@ -28,8 +28,8 @@ class ngconnectInfo
     {
         return array(
             'Name' => '<a href="http://projects.ez.no/ngconnect">Netgen Connect</a> extension',
-            'Version' => '1.1',
-            'Copyright' => 'Copyright (C) 2011 Netgen d.o.o.',
+            'Version' => '1.2',
+            'Copyright' => 'Copyright (C) 2011-2013 Netgen d.o.o.',
             'License' => 'GNU General Public License v2.0'
         );
     }
