@@ -101,29 +101,15 @@ class ngConnectAuthTumblr implements INGConnectAuthInterface
 		}
 
 		$connection = new TumblrOAuth($consumerKey, $consumerSecret, $accessToken['oauth_token'], $accessToken['oauth_token_secret']);
-		$userXml = $connection->post('http://www.tumblr.com/api/authenticate');
-		$userDom = new DOMDocument('1.0', 'utf-8');
-		$userDom->loadXML($userXml);
-		if(!($userXml && $userDom))
-		{
-			return array('status' => 'error', 'message' => 'Invalid Tumblr user.');
-		}
+		$userData = $connection->get('http://api.tumblr.com/v2/user/info');
 
-		if($userDom->hasChildNodes() && $userDom->firstChild->hasChildNodes())
-		{
-			$tumbleLogList = $userDom->firstChild->getElementsByTagName('tumblelog');
-			if($tumbleLogList->length > 0)
-			{
-				$tumbleLog = $tumbleLogList->item(0);
+        $userData = json_decode( $userData, true );
+        if ( !is_array( $userData ) || empty( $userData['response']['user']['name'] ) )
+        {
+            return array('status' => 'error', 'message' => 'Invalid Tumblr user.');
+        }
 
-				if(!($tumbleLog->hasAttribute('name') && strlen($tumbleLog->getAttribute('name')) > 0))
-				{
-					return array('status' => 'error', 'message' => 'Invalid Tumblr user.');
-				}
-			}
-		}
-
-		$name = $tumbleLog->getAttribute('name');
+		$name = $userData['response']['user']['name'];
 		$result = array(
 			'status'				=> 'success',
 			'login_method'			=> 'tumblr',
@@ -131,7 +117,7 @@ class ngConnectAuthTumblr implements INGConnectAuthInterface
 			'first_name'			=> $name,
 			'last_name'				=> $name,
 			'email'					=> '',
-			'picture'				=> $tumbleLog->hasAttribute('avatar-url') ? $tumbleLog->getAttribute('avatar-url') : ''
+			'picture'				=> ''
 		);
 
 		return $result;
