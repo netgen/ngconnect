@@ -1,11 +1,4 @@
-Netgen Connect README
-
-For documentation see: doc/Netgen Connect doc.pdf
-For install instructions see: doc/INSTALL (also in documentation PDF)
-For license see: LICENSE
-For configuration instructions see: settings/ngconnect.ini (also in documentation PDF)
-For changelog see: doc/CHANGELOG
-
+# Netgen Connect extension
 Netgen Connect is a simple eZ Publish extension able to provide user sign in
 by using social network authentication and authorization. (Facebook Connect
 for example).
@@ -19,10 +12,10 @@ Upon taking an action there (allowing or denying authorization), users are taken
 back to your eZ Publish installation and automatically logged in to your site
 in case of successful authorization.
 
-You can configure this extension by changing the values in ngconnect.ini, or, better
-yet (and recommended way), by overriding ngconnect.ini and configure desired settings
+You can configure this extension by changing the values in `ngconnect.ini`, or, better
+yet (and recommended way), by overriding `ngconnect.ini` and configure desired settings
 in your override. Full instructions for configuring the extension are included in
-ngconnect.ini settings file.
+`ngconnect.ini` settings file.
 
 Before using the extension, you need to create Facebook, Twitter or Tumblr apps and have
 their consumer keys and secrets ready.
@@ -30,6 +23,23 @@ their consumer keys and secrets ready.
 This extension is published under GNU GPLv2 license and as such can be freely used
 and modified.
 
-PHP libraries used in this extension:
-OAuth PHP library: http://code.google.com/p/oauth/
-TwitterOAuth PHP library: http://github.com/abraham/twitteroauth
+## License, installation instructions and changelog
+[Documentation](doc/Netgen Connect doc.pdf)
+
+[Installation instructions](doc/INSTALL.md)
+
+[License](LICENSE)
+
+[Configuration instructions](settings/ngconnect.ini)
+
+[Changelog](doc/CHANGELOG.md)
+
+## Project page
+
+You can find the project page on [projects.ez.no](http://projects.ez.no/ngconnect)
+
+## PHP libraries used in this extension
+
+[OAuth PHP library](http://code.google.com/p/oauth/)
+
+[TwitterOAuth PHP library](http://github.com/abraham/twitteroauth)
