@@ -6,37 +6,34 @@ $ViewList = array();
 $FunctionList = array();
 
 $ViewList['login'] = array(
-    'functions' => array('login'),
+    'functions' => array( 'login' ),
     'script' => 'login.php',
     'ui_context' => 'authentication',
-    'params' => array('LoginMethod')
+    'params' => array( 'LoginMethod' )
 );
 
 $ViewList['callback'] = array(
-    'functions' => array('callback'),
+    'functions' => array( 'callback' ),
     'script' => 'callback.php',
     'ui_context' => 'authentication',
-    'params' => array('LoginMethod')
+    'params' => array( 'LoginMethod' )
 );
 
 $ViewList['profile'] = array(
-    'functions' => array('profile'),
+    'functions' => array( 'profile' ),
     'script' => 'profile.php',
     'ui_context' => 'authentication',
     'params' => array()
 );
 
 $ViewList['success'] = array(
-    'functions' => array('success'),
+    'functions' => array( 'success' ),
     'script' => 'success.php',
     'ui_context' => 'authentication',
     'params' => array()
 );
 
-
 $FunctionList['login'] = array();
 $FunctionList['callback'] = array();
 $FunctionList['profile'] = array();
 $FunctionList['success'] = array();
-
-?>

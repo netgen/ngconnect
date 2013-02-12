@@ -12,8 +12,8 @@
 </head>
 <body>
     <script type="text/javascript">
-        {if and(ezhttp_hasvariable('NGConnectRedirectToProfile', 'session'), ezhttp('NGConnectRedirectToProfile', 'session')|eq('true'))}
-        window.opener.location = '{'ngconnect/profile'|ezurl(no, full)}';
+        {if and( ezhttp_hasvariable( 'NGConnectRedirectToProfile', 'session' ), ezhttp( 'NGConnectRedirectToProfile', 'session' )|eq( 'true' ) )}
+        window.opener.location = '{'ngconnect/profile'|ezurl( no, full )}';
         {else}
         window.opener.location.reload();
         {/if}

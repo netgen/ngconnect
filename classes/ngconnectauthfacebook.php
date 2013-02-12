@@ -8,139 +8,153 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
     const PICTURE_URI = 'http://graph.facebook.com/%user_id%/picture';
     const CALLBACK_URI_PART = '/ngconnect/callback/facebook';
 
+    /**
+     * This method is used to process the first part of authentication workflow, before redirect
+     *
+     * @return array Array with status and redirect URI
+     */
     public function getRedirectUri()
     {
-        $ngConnectINI = eZINI::instance('ngconnect.ini');
+        $ngConnectINI = eZINI::instance( 'ngconnect.ini' );
         $http = eZHTTPTool::instance();
 
-        $appID = trim($ngConnectINI->variable('LoginMethod_facebook', 'FacebookAppID'));
+        $appID = trim( $ngConnectINI->variable( 'LoginMethod_facebook', 'FacebookAppID' ) );
 
-        if(strlen($appID) == 0)
+        if ( empty( $appID ) )
         {
-            return array('status' => 'error', 'message' => 'Facebook app ID undefined.');
+            return array( 'status' => 'error', 'message' => 'Facebook app ID undefined.' );
         }
 
         $displayType = 'page';
         $callbackUri = self::CALLBACK_URI_PART;
 
-        $loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
-        if($loginWindowType == 'popup')
+        $loginWindowType = trim( $ngConnectINI->variable( 'ngconnect', 'LoginWindowType' ) );
+        if ( $loginWindowType == 'popup' )
         {
             $displayType = 'popup';
             $callbackUri = '/layout/set/ngconnect' . self::CALLBACK_URI_PART;
         }
-        eZURI::transformURI($callbackUri, false, 'full');
+        eZURI::transformURI( $callbackUri, false, 'full' );
 
-        $permissionsArray = $ngConnectINI->variable('LoginMethod_facebook', 'Permissions');
+        $permissionsArray = $ngConnectINI->variable( 'LoginMethod_facebook', 'Permissions' );
         $permissionsString = '';
-        if(is_array($permissionsArray) && count($permissionsArray) > 0)
+        if ( is_array( $permissionsArray ) && !empty( $permissionsArray ) )
         {
-            $permissionsString = implode(',', $permissionsArray);
+            $permissionsString = implode( ',', $permissionsArray );
         }
 
-        $state = md5(session_id() . (string) time());
-        $http->setSessionVariable('NGConnectOAuthState', $state);
+        $state = md5( session_id() . (string) time() );
+        $http->setSessionVariable( 'NGConnectOAuthState', $state );
 
-        $redirectUri = str_replace(array('%display%', '%app_id%', '%site_url%', '%permissions%', '%state%'),
-                                    array(urlencode($displayType), urlencode($appID), urlencode($callbackUri), urlencode($permissionsString), $state),
-                                    self::AUTH_URI);
-        return array('status' => 'success', 'redirect_uri' => $redirectUri);
+        $redirectUri = str_replace(
+            array( '%display%', '%app_id%', '%site_url%', '%permissions%', '%state%' ),
+            array( urlencode( $displayType ), urlencode( $appID ), urlencode( $callbackUri ), urlencode( $permissionsString ), $state ),
+            self::AUTH_URI
+        );
+
+        return array( 'status' => 'success', 'redirect_uri' => $redirectUri );
     }
 
+    /**
+     * This method is used to process the second part of authentication workflow, after redirect
+     *
+     * @return array Array with status and user details
+     */
     public function processAuth()
     {
-        $ngConnectINI = eZINI::instance('ngconnect.ini');
+        $ngConnectINI = eZINI::instance( 'ngconnect.ini' );
         $http = eZHTTPTool::instance();
 
-        $appID = trim($ngConnectINI->variable('LoginMethod_facebook', 'FacebookAppID'));
-        $appSecret = trim($ngConnectINI->variable('LoginMethod_facebook', 'FacebookAppSecret'));
+        $appID = trim( $ngConnectINI->variable( 'LoginMethod_facebook', 'FacebookAppID' ) );
+        $appSecret = trim( $ngConnectINI->variable( 'LoginMethod_facebook', 'FacebookAppSecret' ) );
 
-        if(!(strlen($appID) > 0 && strlen($appSecret) > 0))
+        if ( empty( $appID ) || empty( $appSecret ) )
         {
-            return array('status' => 'error', 'message' => 'Facebook app ID or Facebook app secret undefined.');
+            return array( 'status' => 'error', 'message' => 'Facebook app ID or Facebook app secret undefined.' );
         }
 
-        if(!($http->hasGetVariable('code') && strlen(trim($http->getVariable('code'))) > 0
-            && $http->hasGetVariable('state') && strlen(trim($http->getVariable('state'))) > 0))
+        $code = trim( $http->getVariable( 'code', '' ) );
+        $state = trim( $http->getVariable( 'state', '' ) );
+
+        if ( empty( $code ) || empty( $state ) )
         {
-            return array('status' => 'error', 'message' => 'code or state GET parameters undefined.');
+            return array( 'status' => 'error', 'message' => 'code or state GET parameters undefined.' );
         }
 
-        $state = trim($http->getVariable('state'));
-        if(!$http->hasSessionVariable('NGConnectOAuthState') || $state != $http->sessionVariable('NGConnectOAuthState'))
+        if( !$http->hasSessionVariable( 'NGConnectOAuthState' ) || $state != $http->sessionVariable( 'NGConnectOAuthState' ) )
         {
-            $http->removeSessionVariable('NGConnectOAuthState');
-            return array('status' => 'error', 'message' => 'State parameter does not match stored value.');
+            $http->removeSessionVariable( 'NGConnectOAuthState' );
+            return array( 'status' => 'error', 'message' => 'State parameter does not match stored value.' );
         }
         else
         {
             $http->removeSessionVariable('NGConnectOAuthState');
         }
 
-        $code = trim($http->getVariable('code'));
-
         $callbackUri = self::CALLBACK_URI_PART;
-        $loginWindowType = trim($ngConnectINI->variable('ngconnect', 'LoginWindowType'));
-        if($loginWindowType == 'popup')
+        $loginWindowType = trim( $ngConnectINI->variable( 'ngconnect', 'LoginWindowType' ) );
+        if ( $loginWindowType == 'popup' )
         {
             $callbackUri = '/layout/set/ngconnect' . self::CALLBACK_URI_PART;
         }
-        eZURI::transformURI($callbackUri, false, 'full');
+        eZURI::transformURI( $callbackUri, false, 'full' );
 
-        $tokenUri = str_replace(array('%app_id%', '%site_url%', '%app_secret%', '%code%'),
-                                array(urlencode($appID), urlencode($callbackUri), urlencode($appSecret), urlencode($code)),
-                                self::TOKEN_URI);
+        $tokenUri = str_replace(
+            array( '%app_id%', '%site_url%', '%app_secret%', '%code%' ),
+            array( urlencode( $appID ), urlencode( $callbackUri ), urlencode( $appSecret ), urlencode( $code ) ),
+            self::TOKEN_URI
+        );
 
-        $accessToken = ngConnectFunctions::fetchDataFromUrl($tokenUri);
-        if(!$accessToken)
+        $accessToken = ngConnectFunctions::fetchDataFromUrl( $tokenUri );
+        if ( !$accessToken )
         {
-            return array('status' => 'error', 'message' => 'Error while retrieving access token.');
+            return array( 'status' => 'error', 'message' => 'Error while retrieving access token.' );
         }
 
-        $accessTokenJson = json_decode($accessToken, true);
-        if($accessTokenJson !== null)
+        $accessTokenJson = json_decode( $accessToken, true );
+        if ( $accessTokenJson !== null )
         {
-            return array('status' => 'error', 'message' => $accessTokenJson['error']['message']);
+            return array( 'status' => 'error', 'message' => $accessTokenJson['error']['message'] );
         }
 
-        $graphUri = str_replace(array('%access_token%'),
-                                array(trim($accessToken)),
-                                self::GRAPH_URI);
+        $graphUri = str_replace(
+            array( '%access_token%' ),
+            array( trim( $accessToken ) ),
+            self::GRAPH_URI
+        );
 
-        $graphResponse = ngConnectFunctions::fetchDataFromUrl($graphUri);
-        if(!$graphResponse)
+        $graphResponse = ngConnectFunctions::fetchDataFromUrl( $graphUri );
+        if ( !$graphResponse )
         {
-            return array('status' => 'error', 'message' => 'Error while retrieving graph response.');
+            return array( 'status' => 'error', 'message' => 'Error while retrieving graph response.' );
         }
 
-        $user = json_decode($graphResponse, true);
-        if($user === null)
+        $user = json_decode( $graphResponse, true );
+        if ( $user === null )
         {
-            return array('status' => 'error', 'message' => 'Invalid JSON data returned.');
+            return array( 'status' => 'error', 'message' => 'Invalid JSON data returned.' );
         }
 
-        if(!isset($user['id']))
+        if ( !isset( $user['id'] ) )
         {
-            return array('status' => 'error', 'message' => 'Invalid Facebook user.');
+            return array( 'status' => 'error', 'message' => 'Invalid Facebook user.' );
         }
 
         $pictureUri = self::PICTURE_URI;
-        $imageSize = trim($ngConnectINI->variable('LoginMethod_facebook', 'ImageSize'));
-        if($imageSize == 'original')
+        $imageSize = trim( $ngConnectINI->variable( 'LoginMethod_facebook', 'ImageSize' ) );
+        if ( $imageSize == 'original' )
             $pictureUri = $pictureUri . '?type=large';
 
         $result = array(
-            'status'                => 'success',
-            'login_method'          => 'facebook',
-            'id'                    => $user['id'],
-            'first_name'            => isset($user['first_name']) ? $user['first_name'] : '',
-            'last_name'             => isset($user['last_name']) ? $user['last_name'] : '',
-            'email'                 => isset($user['email']) ? $user['email'] : '',
-            'picture'               => str_replace('%user_id%', $user['id'], $pictureUri)
+            'status' => 'success',
+            'login_method' => 'facebook',
+            'id' => $user['id'],
+            'first_name' => isset( $user['first_name'] ) ? $user['first_name'] : '',
+            'last_name' => isset( $user['last_name'] ) ? $user['last_name'] : '',
+            'email' => isset( $user['email'] ) ? $user['email'] : '',
+            'picture' => str_replace( '%user_id%', $user['id'], $pictureUri )
         );
 
         return $result;
     }
 }
-
-?>
