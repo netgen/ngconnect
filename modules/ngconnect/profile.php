@@ -79,17 +79,17 @@ if ( $http->hasSessionVariable( 'NGConnectAuthResult' ) && ( $regularRegistratio
         $validationResult = ngConnectUserActivation::validateUserInput( $http );
         if ( $validationResult['status'] == 'success' )
         {
-            $login = trim( $http->postVariable( 'data_user_login' ) );
-            $email = trim( $http->postVariable( 'data_user_email' ) );
-            $password = trim( $http->postVariable( 'data_user_password' ) );
-            if ( empty( $password ) && $siteINI->variable( 'UserSettings', 'GeneratePasswordIfEmpty' ) == 'true' )
-            {
-                $password = $user->createPassword( $siteINI->variable( 'UserSettings', 'GeneratePasswordLength' ) );
-            }
-
             $user = ngConnectFunctions::createUser( $authResult );
             if ( $user instanceof eZUser )
             {
+                $login = trim( $http->postVariable( 'data_user_login' ) );
+                $email = trim( $http->postVariable( 'data_user_email' ) );
+                $password = trim( $http->postVariable( 'data_user_password' ) );
+                if ( empty( $password ) && $siteINI->variable( 'UserSettings', 'GeneratePasswordIfEmpty' ) == 'true' )
+                {
+                    $password = $user->createPassword( $siteINI->variable( 'UserSettings', 'GeneratePasswordLength' ) );
+                }
+
                 // we created the new account, but still need to set things up so users can login using a regular login form
                 $db = eZDB::instance();
                 $db->begin();
