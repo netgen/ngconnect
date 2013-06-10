@@ -1,0 +1,16 @@
+{
+    "name": "netgen/ngconnect",
+    "description": "Netgen Connect is a simple eZ Publish extension able to provide user sign in by using social network authentication and authorization.",
+    "type": "ezpublish-legacy-extension",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Netgen",
+            "email": "info@netgen.hr"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ezsystems/ezpublish-legacy-installer": "*"
+    }
+}
