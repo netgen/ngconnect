@@ -37,6 +37,7 @@ class ngConnectAuthTwitter implements INGConnectAuthInterface
         eZURI::transformURI( $callbackUri, false, 'full' );
 
         $connection = new TwitterOAuth( $consumerKey, $consumerSecret );
+        $connection->host = "https://api.twitter.com/1.1/";
         $tempCredentials = $connection->getRequestToken( $callbackUri );
         $redirectUri = $connection->getAuthorizeURL( $tempCredentials );
 
@@ -102,6 +103,7 @@ class ngConnectAuthTwitter implements INGConnectAuthInterface
         }
 
         $connection = new TwitterOAuth( $consumerKey, $consumerSecret, $oAuthToken, $oAuthTokenSecret );
+        $connection->host = "https://api.twitter.com/1.1/";
         $accessToken = $connection->getAccessToken( $oAuthVerifier );
         if ( !( isset( $accessToken['oauth_token'] ) && isset( $accessToken['oauth_token_secret'] ) ) )
         {
@@ -109,6 +111,7 @@ class ngConnectAuthTwitter implements INGConnectAuthInterface
         }
 
         $connection = new TwitterOAuth( $consumerKey, $consumerSecret, $accessToken['oauth_token'], $accessToken['oauth_token_secret'] );
+        $connection->host = "https://api.twitter.com/1.1/";
         $user = $connection->get( self::TWITTER_USER_API_URI );
         if ( !isset( $user->id ) || empty( $user->id ) )
         {
