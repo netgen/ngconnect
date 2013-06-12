@@ -17,3 +17,7 @@
 
 - Bug fixes
 - Migrate Tumblr authentication to new API
+
+## Version 1.3 (12.06.2013)
+
+- Migrate Twitter authentication to version 1.1 of API (thanks Hrvoje Knežević)
