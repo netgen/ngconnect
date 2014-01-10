@@ -23,9 +23,13 @@ foreach ( $userConnections as $userConnectionObject )
     }
 }
 
-if ( $http->hasSessionVariable( 'NGConnectLastAccessURI' ) )
+if ( $http->hasSessionVariable( 'LastAccessesURI' ) )
 {
-    return $module->redirectTo( '/user/edit' );
+    return $module->redirectTo( $http->sessionVariable( 'LastAccessesURI' ) );
+}
+else
+{
+    return $module->redirectTo( '/' );
 }
 
 ?>
