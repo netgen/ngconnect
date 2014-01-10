@@ -15,6 +15,7 @@ $debugEnabled = ( trim( $ngConnectINI->variable( 'ngconnect', 'DebugEnabled' ) )
 $regularRegistration = trim( $ngConnectINI->variable( 'ngconnect', 'RegularRegistration' ) ) == 'enabled';
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 if ( ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
      ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
      ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
@@ -26,6 +27,11 @@ if ( ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' 
 {
     $regularRegistration = 'disabled';
 >>>>>>> fixed several typos, added an option to the callback.php function to treat the registration as a disabled regular registration if the profile options are all disabled
+=======
+if ( ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) && ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) && ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) && ( trim( $ngConnectINI->variable( 'ngconnect', 'RegularRegistration' ) ) == 'enabled' ) )
+{
+    $regularRegistration = 'disabled';
+>>>>>>> f3265328791e4b278f24cc8589fed4f56e7aff15
 }
 
 //we don't allow ngconnect/profile to run by default

@@ -34,10 +34,14 @@
     {/if}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     {if and( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'SkipGeneration', 'ngconnect.ini' )|eq( 'enabled' ) )}
 =======
     {if or( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'SkipGeneration', 'ngconnect.ini' )|eq( 'enabled' ) )}
 >>>>>>> fixed several typos, added an option to the callback.php function to treat the registration as a disabled regular registration if the profile options are all disabled
+=======
+    {if or( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'SkipGeneration', 'ngconnect.ini' )|eq( 'enabled' ) )}
+>>>>>>> f3265328791e4b278f24cc8589fed4f56e7aff15
         <div class="block">
             <form action={'ngconnect/profile'|ezurl} method="post">
                 <div class="buttonblock">
@@ -66,10 +70,14 @@
     {/if}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     {if and( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'CreateUser', 'ngconnect.ini' )|eq( 'enabled' ) )}
 =======
     {if or( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'CreateUser', 'ngconnect.ini' )|eq( 'enabled' ) )}
 >>>>>>> fixed several typos, added an option to the callback.php function to treat the registration as a disabled regular registration if the profile options are all disabled
+=======
+    {if or( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'CreateUser', 'ngconnect.ini' )|eq( 'enabled' ) )}
+>>>>>>> f3265328791e4b278f24cc8589fed4f56e7aff15
         <h2>{'Create new account'|i18n( 'extension/ngconnect/ngconnect/profile' )}</h2>
 
         <div class="block">
