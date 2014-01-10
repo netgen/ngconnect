@@ -91,4 +91,27 @@
         <translation>U redu</translation>
     </message>
 </context>
+<context>
+    <name>extension/ngconnect/ngconnect/connections</name>
+    <message>
+        <source>Your account is currently linked to the following social networks</source>
+        <translation>Vaš račun je trenutno povezan sa sljedećim društvenim mrežama</translation>
+    </message>
+    <message>
+        <source>Social network name</source>
+        <translation>Naziv društvene mreže</translation>
+    </message>
+    <message>
+        <source>Unlink</source>
+        <translation>Izbriši vezu</translation>
+    </message>
+    <message>
+        <source>Your account currently has no active social network connections.</source>
+        <translation>Vaš račun trenutno nema postojećih veza sa društvenim mrežama.</translation>
+    </message>
+    <message>
+        <source>Additional social network connections are available</source>
+        <translation>Veze sa dodatnim društvenim mrežama su moguće</translation>
+    </message>
+</context>
 </TS>
