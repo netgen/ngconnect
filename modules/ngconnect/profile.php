@@ -41,7 +41,7 @@ if ( $http->hasSessionVariable( 'NGConnectAuthResult' ) && ( $regularRegistratio
             $validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'User with an email address supplied by your social network already exists. Try logging in instead.' );
         }
     }
-    else if ( $http->hasPostVariable( 'LoginButton' ) && ( $ngConnectINI->variable( 'ProfileGenerationSettings', 'LoginUser' ) == 'enabled' ) )
+    else if ( $http->hasPostVariable( 'LoginButton' ) && ( ( $ngConnectINI->variable( 'ProfileGenerationSettings', 'LoginUser' ) == 'enabled' ) || $forcedRedirect ) )
     {
         // user is trying to connect to the existing account
         $login = trim( $http->postVariable( 'Login' ) );
