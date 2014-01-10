@@ -14,7 +14,7 @@ $forcedRedirect = $http->hasSessionVariable( 'NGConnectForceRedirect' );
 if ( $http->hasSessionVariable( 'NGConnectAuthResult' ) && ( $regularRegistration || $forcedRedirect ) )
 {
     $authResult = $http->sessionVariable( 'NGConnectAuthResult' );
-    if ( $http->hasPostVariable( 'SkipButton' ) && !$forcedRedirect )
+    if ( $http->hasPostVariable( 'SkipButton' ) && !$forcedRedirect && ($ngConnectINI->variable( 'ProfileGenerationSettings', 'SkipGeneration' ) == 'enabled') )
     {
         // user wants to skip connecting accounts
         // again, who are we to say no? so just create the user and bail out
@@ -41,7 +41,7 @@ if ( $http->hasSessionVariable( 'NGConnectAuthResult' ) && ( $regularRegistratio
             $validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'User with an email address supplied by your social network already exists. Try logging in instead.' );
         }
     }
-    else if ( $http->hasPostVariable( 'LoginButton' ) )
+    else if ( $http->hasPostVariable( 'LoginButton' ) && ($ngConnectINI->variable( 'ProfileGenerationSettings', 'LoginUser' ) == 'enabled') )
     {
         // user is trying to connect to the existing account
         $login = trim( $http->postVariable( 'Login' ) );
@@ -65,7 +65,7 @@ if ( $http->hasSessionVariable( 'NGConnectAuthResult' ) && ( $regularRegistratio
             $validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'A valid username and password is required to login.' );
         }
     }
-    else if ( $http->hasPostVariable( 'SaveButton' ) && !$forcedRedirect )
+    else if ( $http->hasPostVariable( 'SaveButton' ) && !$forcedRedirect && ($ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) == 'enabled') )
     {
         // user wants to connect by creating a new eZ Publish account
         if ( $http->hasSessionVariable( 'NGConnectStartedRegistration' ) )
