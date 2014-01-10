@@ -121,7 +121,7 @@ class ngConnectAuthTwitter implements INGConnectAuthInterface
         if ( isset( $user->profile_image_url ) && !empty( $user->profile_image_url ) )
         {
             $pictureUri = $user->profile_image_url;
-            $imageSize = trim( $ngConnectINI->variable( 'LoginMethod_facebook', 'ImageSize' ) );
+            $imageSize = trim( $ngConnectINI->variable( 'LoginMethod_twitter', 'ImageSize' ) );
             if ( $imageSize == 'original' )
             {
                 //Hm... it seems there's no way to get the full size image through API
