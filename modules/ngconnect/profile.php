@@ -14,7 +14,7 @@ $forcedRedirect = $http->hasSessionVariable( 'NGConnectForceRedirect' );
 if ( $http->hasSessionVariable( 'NGConnectAuthResult' ) && ( $regularRegistration || $forcedRedirect ) )
 {
     $authResult = $http->sessionVariable( 'NGConnectAuthResult' );
-    if ( $http->hasPostVariable( 'SkipButton' ) && !$forcedRedirect && ( $ngConnectINI->variable( 'ProfileGenerationSettings', 'SkipGeneration' ) == 'enabled' ) )
+    if ( $http->hasPostVariable( 'SkipButton' ) && !$forcedRedirect && ( $ngConnectINI->variable( 'ProfileGenerationSettings', 'Skip' ) == 'enabled' ) )
     {
         // user wants to skip connecting accounts
         // again, who are we to say no? so just create the user and bail out

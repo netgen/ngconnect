@@ -25,7 +25,7 @@
         {if ezini( 'ProfileGenerationSettings', 'CreateUser', 'ngconnect.ini' )|eq( 'enabled' )}
             <p>{'If you do not have a regular account, enter your desired username and password under "Create new account" section.'|i18n( 'extension/ngconnect/ngconnect/profile' )}</p>
         {/if}
-        {if ezini( 'ProfileGenerationSettings', 'SkipGeneration', 'ngconnect.ini' )|eq( 'enabled' )}
+        {if ezini( 'ProfileGenerationSettings', 'Skip', 'ngconnect.ini' )|eq( 'enabled' )}
             <p>{'If you do not wish to create a regular account, simply click the "Skip" button below, and we won\'t bother you with this again.'|i18n( 'extension/ngconnect/ngconnect/profile' )}</p>
         {/if}
     {else}
@@ -33,7 +33,7 @@
         <p>{'If you forgot your password, request a new one'|i18n( 'extension/ngconnect/ngconnect/profile' )} <a href={'user/forgotpassword'|ezurl}>{'here'|i18n( 'extension/ngconnect/ngconnect/profile' )}</a>.</p>
     {/if}
 
-    {if and( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'SkipGeneration', 'ngconnect.ini' )|eq( 'enabled' ) )}
+    {if and( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'Skip', 'ngconnect.ini' )|eq( 'enabled' ) )}
         <div class="block">
             <form action={'ngconnect/profile'|ezurl} method="post">
                 <div class="buttonblock">
