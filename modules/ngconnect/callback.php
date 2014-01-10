@@ -14,6 +14,14 @@ $loginWindowType = trim( $ngConnectINI->variable( 'ngconnect', 'LoginWindowType'
 $debugEnabled = ( trim( $ngConnectINI->variable( 'ngconnect', 'DebugEnabled' ) ) == 'true' );
 $regularRegistration = trim( $ngConnectINI->variable( 'ngconnect', 'RegularRegistration' ) ) == 'enabled';
 
+if ( ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
+     ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
+     ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
+     ( $regularRegistration == 'enabled' ) )
+{
+    $regularRegistration = false;
+}
+
 //we don't allow ngconnect/profile to run by default
 $http->removeSessionVariable( 'NGConnectRedirectToProfile' );
 $http->removeSessionVariable( 'NGConnectAuthResult' );
