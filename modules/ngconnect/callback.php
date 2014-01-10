@@ -17,7 +17,7 @@ $regularRegistration = trim( $ngConnectINI->variable( 'ngconnect', 'RegularRegis
 if ( ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
      ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
      ( trim( $ngConnectINI->variable( 'ProfileGenerationSettings', 'CreateUser' ) ) !== 'enabled' ) &&
-     ( $regularRegistration == 'enabled' ) )
+     $regularRegistration )
 {
     $regularRegistration = false;
 }
