@@ -33,7 +33,15 @@ $ViewList['success'] = array(
     'params' => array()
 );
 
+$ViewList['unlink'] = array(
+    'functions' => array( 'unlink' ),
+    'script' => 'unlink.php',
+    'ui_context' => 'authentication',
+    'params' => array( 'LoginMethod' )
+);
+
 $FunctionList['login'] = array();
 $FunctionList['callback'] = array();
 $FunctionList['profile'] = array();
 $FunctionList['success'] = array();
+$FunctionList['unlink'] = array();
