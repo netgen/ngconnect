@@ -33,7 +33,7 @@
         <p>{'If you forgot your password, request a new one'|i18n( 'extension/ngconnect/ngconnect/profile' )} <a href={'user/forgotpassword'|ezurl}>{'here'|i18n( 'extension/ngconnect/ngconnect/profile' )}</a>.</p>
     {/if}
 
-    {if and($forced_redirect|not, ezini( 'ProfileGenerationSettings', 'SkipGeneration', 'ngconnect.ini' )|eq( 'enabled' ))}
+    {if or( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'SkipGeneration', 'ngconnect.ini' )|eq( 'enabled' ) )}
         <div class="block">
             <form action={'ngconnect/profile'|ezurl} method="post">
                 <div class="buttonblock">
@@ -61,7 +61,7 @@
         </div>
     {/if}
 
-    {if and($forced_redirect|not, ezini( 'ProfileGenerationSettings', 'CreateUser', 'ngconnect.ini' )|eq( 'enabled' ))}
+    {if or( $forced_redirect|not, ezini( 'ProfileGenerationSettings', 'CreateUser', 'ngconnect.ini' )|eq( 'enabled' ) )}
         <h2>{'Create new account'|i18n( 'extension/ngconnect/ngconnect/profile' )}</h2>
 
         <div class="block">
