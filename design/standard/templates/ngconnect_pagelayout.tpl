@@ -8,7 +8,7 @@
     <meta name="author" content="Netgen d.o.o." />
     <meta name="copyright" content="Netgen d.o.o." />
     <meta name="description" content="Netgen Connect eZ Publish extension by Netgen d.o.o." />
-    <meta name="keywords" content="social networks, facebook, twitter, tumblr, ezpublish, netgen, ngconnect, netgen connect" />
+    <meta name="keywords" content="social networks, facebook, twitter, tumblr, google, ezpublish, netgen, ngconnect, netgen connect" />
 </head>
 <body>
     <script type="text/javascript">
