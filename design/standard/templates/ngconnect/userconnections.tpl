@@ -14,7 +14,7 @@
     {foreach $user_connections as $connection sequence array( 'bglight', 'bgdark' ) as $seq}
         {set $current_networks = append( $connection.login_method )}
         <tr class="{$seq}">
-            <td>{$connection.login_method|upfirst}</td>
+            <td>{$connection.login_method|upfirst|wash}</td>
             <td><a href={concat( 'ngconnect/unlink/', $connection.login_method )|ezurl()}>{'Unlink'|i18n( 'extension/ngconnect/ngconnect/connections' )}</a></td>
         </tr>
     {/foreach}
