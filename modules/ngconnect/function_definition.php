@@ -45,3 +45,20 @@ $FunctionList['user_has_connection'] = array(
         )
     )
 );
+
+$FunctionList['connections'] = array(
+    'name' => 'connections',
+    'operation_types' => array( 'read' ),
+    'call_method' => array(
+        'class' => 'ngConnectFunctionCollection',
+        'method' => 'connections'
+    ),
+    'parameter_type' => 'standard',
+    'parameters' => array(
+        array(
+            'name' => 'user_id',
+            'type' => 'integer',
+            'required' => true
+        )
+    )
+);

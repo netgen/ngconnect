@@ -121,4 +121,27 @@ class ngConnect extends eZPersistentObject
 
         return false;
     }
+
+    /**
+     * Returns all of eZ Publish users connections to social networks
+     *
+     * @param int $userID
+     *
+     * @return bool
+     */
+    static function connections( $userID )
+    {
+        $result = eZPersistentObject::fetchObjectList(
+            self::definition(),
+            null,
+            array(
+                'user_id' => $userID
+            )
+        );
+
+        if ( is_array( $result ) && !empty( $result ) )
+            return $result;
+
+        return array();
+    }
 }

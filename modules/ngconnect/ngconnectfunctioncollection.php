@@ -57,4 +57,16 @@ class ngConnectFunctionCollection
     {
         return array( 'result' => ngConnect::userHasConnection( $userID, $loginMethod ) );
     }
+
+    /**
+     * Returns all of a users connections to social networks
+     *
+     * @param int $userID
+     *
+     * @return array
+     */
+    static public function connections( $userID )
+    {
+        return array( 'result' => ngConnect::connections( $userID ) );
+    }
 }
