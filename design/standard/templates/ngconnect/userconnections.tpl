@@ -12,7 +12,7 @@
         <th></th>
     </tr>
     {foreach $user_connections as $connection sequence array( 'bglight', 'bgdark' ) as $seq}
-        {set $current_networks = append( $connection.login_method )}
+        {set $current_networks = $current_networks|append( $connection.login_method )}
         <tr class="{$seq}">
             <td>{$connection.login_method|upfirst|wash}</td>
             <td><a href={concat( 'ngconnect/unlink/', $connection.login_method )|ezurl()}>{'Unlink'|i18n( 'extension/ngconnect/ngconnect/connections' )}</a></td>
@@ -23,11 +23,11 @@
     <p>{"Your account currently has no active social network connections."|i18n( 'extension/ngconnect/ngconnect/connections' )}</p>
 {/if}
 
-{def $additional_social_network_connections = false}
+{def $additional_social_network_connections = false()}
 
 {foreach $all_login_methods as $l}
     {if $current_networks|contains( $l )|not()}
-        {set $additional_social_network_connections = true}
+        {set $additional_social_network_connections = true()}
     {/if}
 {/foreach}
 
