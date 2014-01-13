@@ -114,7 +114,9 @@ class ngConnectAuthGoogle implements INGConnectAuthInterface
 
         $plus = new Google_PlusService( $client );
         $authString = $client->authenticate();
-        if ( empty( $authString ) || empty( $client->getAccessToken() ) )
+        $accessToken = $client->getAccessToken();
+
+        if ( empty( $authString ) || empty( $accessToken ) )
         {
             return array( 'status' => 'error', 'message' => 'Unable to authenticate to Google.' );
         }
