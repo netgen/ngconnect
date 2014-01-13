@@ -21,3 +21,11 @@
 ## Version 1.3 (12.06.2013)
 
 - Migrate Twitter authentication to version 1.1 of API (thanks Hrvoje Knežević)
+
+## Version 1.4 (13.01.2014)
+
+- Bug fixes
+- Added Google+ login handler
+- Added unlink module view to remove existing connections from current user (thanks @tbuljevic)
+- Added a new template to list all connections the user has with possibility to remove them (thanks @tbuljevic)
+- Added possiblity to disable account creation by users and linking to existing account (thanks @tbuljevic)
