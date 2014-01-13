@@ -40,6 +40,10 @@
         <translation>Vul een geldige gebruikersnaam en wachtwoord in om in te loggen.</translation>
     </message>
     <message>
+        <source>This account already has a connection to selected social network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>You are not allowed to access the site.</source>
         <translation>Je hebt geen toegang tot de site.</translation>
     </message>
@@ -89,6 +93,29 @@
     <message>
         <source>OK</source>
         <translation>OK</translation>
+    </message>
+</context>
+<context>
+    <name>extension/ngconnect/ngconnect/connections</name>
+    <message>
+        <source>Your account is currently linked to the following social networks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Social network name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unlink</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your account currently has no active social network connections.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Additional social network connections are available</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
