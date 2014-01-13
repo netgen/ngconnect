@@ -40,6 +40,10 @@
         <translation>Uneseno korisničko ime ili lozinka su neispravni.</translation>
     </message>
     <message>
+        <source>This account already has a connection to selected social network.</source>
+        <translation>Uneseni korisnički račun već ima vezu na odabranu društvenu mrežu.</translation>
+    </message>
+    <message>
         <source>You are not allowed to access the site.</source>
         <translation>Nemate dozvolu za pristup web stranicama.</translation>
     </message>

@@ -40,6 +40,10 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>This account already has a connection to selected social network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>You are not allowed to access the site.</source>
         <translation type="unfinished"></translation>
     </message>

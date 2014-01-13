@@ -51,6 +51,12 @@ if ( $http->hasSessionVariable( 'NGConnectAuthResult' ) && ( $regularRegistratio
         {
             if ( $userToLogin->canLoginToSiteAccess( $GLOBALS['eZCurrentAccess'] ) )
             {
+                if ( ngConnect::userHasConnection( $userToLogin->ContentObjectID, $authResult['login_method'] ) )
+                {
+                    eZUser::logoutCurrent();
+                    $validationError = ezpI18n::tr( 'extension/ngconnect/ngconnect/profile', 'This account already has a connection to selected social network.' );
+                }
+
                 ngConnectFunctions::connectUser( $userToLogin->ContentObjectID, $authResult['login_method'], $authResult['id'] );
                 redirect( $http, $module );
             }
