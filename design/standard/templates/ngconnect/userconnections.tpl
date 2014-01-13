@@ -1,6 +1,6 @@
-{def $user = fetch( 'user', 'current_user' )}
-{def $user_connections = fetch( 'ngconnect', 'connections', hash( 'user_id', $user.contentobject_id ) )}
-{def $login_methods = ezini( 'ngconnect', 'LoginMethods', 'ngconnect.ini' )}
+{def $current_user = fetch( 'user', 'current_user' )}
+{def $user_connections = fetch( 'ngconnect', 'connections', hash( 'user_id', $current_user.contentobject_id ) )}
+{def $all_login_methods = ezini( 'ngconnect', 'LoginMethods', 'ngconnect.ini' )}
 {def $current_networks = array()}
 
 {if $user_connections}
@@ -25,7 +25,7 @@
 
 {def $additional_social_network_connections = false}
 
-{foreach $login_methods as $l}
+{foreach $all_login_methods as $l}
     {if $current_networks|contains( $l )|not()}
         {set $additional_social_network_connections = true}
     {/if}
