@@ -14,6 +14,8 @@
     <script type="text/javascript">
         {if and( ezhttp_hasvariable( 'NGConnectRedirectToProfile', 'session' ), ezhttp( 'NGConnectRedirectToProfile', 'session' )|eq( 'true' ) )}
         window.opener.location = '{'ngconnect/profile'|ezurl( no, full )}';
+        {elseif ezhttp_hasvariable( 'NGConnectLastAccessURI', 'session' )}
+        window.opener.location = '{ezhttp( 'NGConnectLastAccessURI', 'session' )}';
         {else}
         window.opener.location.reload();
         {/if}
