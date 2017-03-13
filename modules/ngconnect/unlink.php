@@ -19,7 +19,11 @@ foreach ( $userConnections as $userConnectionObject )
     }
 }
 
-if ( $http->hasSessionVariable( 'LastAccessesURI' ) )
+if ( $http->hasGetVariable( 'redirectURI' ) && strlen( $http->getVariable( 'redirectURI' ) ) > 0 )
+{
+    return $module->redirectTo( $http->getVariable( 'redirectURI' ) );
+}
+elseif ( $http->hasSessionVariable( 'LastAccessesURI' ) )
 {
     return $module->redirectTo( $http->sessionVariable( 'LastAccessesURI' ) );
 }
