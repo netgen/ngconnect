@@ -4,7 +4,7 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
 {
     const AUTH_URI = 'https://www.facebook.com/dialog/oauth?display=%display%&client_id=%app_id%&redirect_uri=%site_url%&scope=%permissions%&state=%state%';
     const TOKEN_URI = 'https://graph.facebook.com/oauth/access_token?client_id=%app_id%&redirect_uri=%site_url%&client_secret=%app_secret%&code=%code%';
-    const GRAPH_URI = 'https://graph.facebook.com/me?fields=id,name,first_name,last_name,email&%access_token%';
+    const GRAPH_URI = 'https://graph.facebook.com/me?fields=id,name,first_name,last_name,email&access_token=%access_token%';
     const PICTURE_URI = 'http://graph.facebook.com/%user_id%/picture';
     const CALLBACK_URI_PART = '/ngconnect/callback/facebook';
 
@@ -112,14 +112,14 @@ class ngConnectAuthFacebook implements INGConnectAuthInterface
         }
 
         $accessTokenJson = json_decode( $accessToken, true );
-        if ( $accessTokenJson !== null )
+        if ( $accessTokenJson !== null && isset($accessTokenJson['error']))
         {
             return array( 'status' => 'error', 'message' => $accessTokenJson['error']['message'] );
         }
 
         $graphUri = str_replace(
             array( '%access_token%' ),
-            array( trim( $accessToken ) ),
+            array( trim( $accessTokenJson['access_token'] ) ),
             self::GRAPH_URI
         );
 
